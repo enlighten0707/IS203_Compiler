@@ -1,0 +1,10 @@
+. {
+	strcpy(seal_yylval.error_msg, yytext); 
+	return (ERROR); 
+}
+
+"/*" {
+  char c;
+  int done=FALSE;
+  while(*yytext!='*') yytext+=1;
+}
