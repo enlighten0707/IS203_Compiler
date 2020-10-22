@@ -73,15 +73,109 @@ extern YYSTYPE seal_yylval;
 
 "/*"(.|\n)*"*/" {}
 
+={2} {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (EQUAL);
+}
 
 = {
-  seal_yylval.symbol = inttable.add_string(yytext); 
+  seal_yylval.symbol = stringtable.add_string(yytext); 
 	return ('=');
 }
 
+\+ {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('+');
+}
+
+- {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('-');
+}
+
+\* {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('*');
+}
+
+% {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('%');
+}
+
+>= {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (GE);
+}
+
+> {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('>');
+}
+
+\| {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('|');
+}
+
 ; {
-  seal_yylval.symbol = inttable.add_string(yytext); 
+  seal_yylval.symbol = stringtable.add_string(yytext); 
 	return (';');
+}
+
+, {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (',');
+}
+
+\{ {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('{');
+}
+
+\} {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('}');
+}
+
+\( {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return ('(');
+}
+
+\) {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (')');
+}
+
+if {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (IF);
+}
+
+while {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (WHILE);
+}
+
+func {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (FUNC);
+}
+
+return {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (RETURN);
+}
+
+true {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (CONST_BOOL);
+}
+
+false {
+  seal_yylval.symbol = stringtable.add_string(yytext); 
+	return (CONST_BOOL);
 }
 
 [`\"][0-9a-zA-Z\\t\n\0 ]*[`\"] {
@@ -94,17 +188,16 @@ extern YYSTYPE seal_yylval;
 	return (CONST_INT);
 }
 
-[0-9]+.[0-9]+ {
-  seal_yylval.symbol = inttable.add_string(yytext); 
-	return (CONST_FLOAT);
-  }
-
-
-
 [0-9]+ {
   seal_yylval.symbol = inttable.add_string(yytext); 
 	return (CONST_INT);
   }
+
+[0-9]+\.[0-9]+ {
+  seal_yylval.symbol = inttable.add_string(yytext); 
+	return (CONST_FLOAT);
+  }
+
 
 var {
   seal_yylval.symbol = stringtable.add_string(yytext); 
@@ -126,7 +219,7 @@ String {
 	return (TYPEID);
 }
 
-[a-z][A-Z0-9_]?  {
+[a-z][a-zA-Z0-9_]*  {
   seal_yylval.symbol = stringtable.add_string(yytext); 
 	return (OBJECTID);
 }
