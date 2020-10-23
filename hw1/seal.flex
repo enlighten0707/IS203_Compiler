@@ -174,13 +174,14 @@ return {
 	return (CONST_STRING);
 }
 
-0x[0-9a-f]+ {
+0[xX][0-9a-fA-F]+ {
   long num=0;
   yytext += 2;
   while(*yytext!='\0') {
     num = num*16;
     if (*yytext>='0' && *yytext<='9' ) num+=(*yytext-48);
     else if (*yytext>='a' && *yytext<='f') num+=(*yytext-87);
+    else if (*yytext>='A' && *yytext<='F') num+=(*yytext-55);
     yytext += 1;
   }
   seal_yylval.symbol = inttable.add_int(num); 
@@ -218,6 +219,16 @@ Float {
 String {
   seal_yylval.symbol = stringtable.add_string(yytext); 
 	return (TYPEID);
+}
+
+true {
+  seal_yylval.boolean = 1;
+	return (CONST_BOOL);
+}
+
+false {
+  seal_yylval.boolean = 0;
+	return (CONST_BOOL);
 }
 
 [a-z][a-zA-Z0-9_]*  {

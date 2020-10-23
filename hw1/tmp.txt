@@ -10,3 +10,9 @@
 }
 
 "/*"(.|\n)*"*/" {}
+
+[A-Z0-9][a-wyz0-9A-WYZ][a-z0-9A-Z]* {
+  if (NOT_COMMENT==1){
+    strcpy(seal_yylval.error_msg, yytext); 
+	  return (ERROR); 
+  }
