@@ -8,3 +8,5 @@
   int done=FALSE;
   while(*yytext!='*') yytext+=1;
 }
+
+"/*"(.|\n)*"*/" {}

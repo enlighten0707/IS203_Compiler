@@ -43,13 +43,7 @@ extern int verbose_flag;
 
 extern YYSTYPE seal_yylval;
 
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
+int NOT_COMMENT=1;
 
 
 /*
@@ -71,7 +65,14 @@ extern YYSTYPE seal_yylval;
   curr_lineno  = curr_lineno+1;
 }
 
-"/*"(.|\n)*"*/" {}
+
+"/*" {
+  NOT_COMMENT = 0;
+}
+
+"*/" {
+  NOT_COMMENT = 1;
+}
 
 ={2} {
   seal_yylval.symbol = stringtable.add_string(yytext); 
@@ -168,23 +169,21 @@ return {
 	return (RETURN);
 }
 
-true {
-  seal_yylval.symbol = stringtable.add_string(yytext); 
-	return (CONST_BOOL);
-}
-
-false {
-  seal_yylval.symbol = stringtable.add_string(yytext); 
-	return (CONST_BOOL);
-}
-
 [`\"][0-9a-zA-Z\\t\n\0 ]*[`\"] {
   seal_yylval.symbol = stringtable.add_string(yytext); 
 	return (CONST_STRING);
 }
 
 0x[0-9a-f]+ {
-  seal_yylval.symbol = inttable.add_string(yytext); 
+  long num=0;
+  yytext += 2;
+  while(*yytext!='\0') {
+    num = num*16;
+    if (*yytext>='0' && *yytext<='9' ) num+=(*yytext-48);
+    else if (*yytext>='a' && *yytext<='f') num+=(*yytext-87);
+    yytext += 1;
+  }
+  seal_yylval.symbol = inttable.add_int(num); 
 	return (CONST_INT);
 }
 
@@ -194,14 +193,16 @@ false {
   }
 
 [0-9]+\.[0-9]+ {
-  seal_yylval.symbol = inttable.add_string(yytext); 
+  seal_yylval.symbol = floattable.add_string(yytext); 
 	return (CONST_FLOAT);
   }
 
 
 var {
-  seal_yylval.symbol = stringtable.add_string(yytext); 
-	return (VAR);
+  if (NOT_COMMENT==1) {
+    seal_yylval.symbol = stringtable.add_string(yytext); 
+    return (VAR);
+  }
 }
 
 Int {
@@ -220,13 +221,18 @@ String {
 }
 
 [a-z][a-zA-Z0-9_]*  {
-  seal_yylval.symbol = stringtable.add_string(yytext); 
+  if (NOT_COMMENT==1){
+    seal_yylval.symbol = stringtable.add_string(yytext); 
 	return (OBJECTID);
+  }
 }
 
 [A-Z0-9][a-z0-9A-Z]* {
-  strcpy(seal_yylval.error_msg, yytext); 
-	return (ERROR); 
+  if (NOT_COMMENT==1){
+    strcpy(seal_yylval.error_msg, yytext); 
+	  return (ERROR); 
+  }
+  
 }
 
 . {}
