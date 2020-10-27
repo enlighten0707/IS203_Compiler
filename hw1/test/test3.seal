@@ -10,3 +10,4 @@ hh`;
 var s3 String;
 s3 = "12 \
 12";
+s4 = "This is a test string.\aIt's a new line\\t.";
