@@ -113,6 +113,7 @@ WRONG_IDENTIFIER  [A-Z][a-zA-Z0-9_]*
 
 %Start COMMENT 
 %Start STRING
+%Start COMMENT_LINE
 
 %%
  /* Operators */
@@ -201,24 +202,35 @@ WRONG_IDENTIFIER  [A-Z][a-zA-Z0-9_]*
  
  
  /* comment */
+
+<INITIAL>"//" {BEGIN COMMENT_LINE;}
+<COMMENT_LINE>\n {
+                    curr_lineno++; 
+                    BEGIN INITIAL;
+                  }
+<COMMENT_LINE>. {}
+
 <INITIAL>"/*" { 
                 commentLevel += 1;
                 BEGIN COMMENT;
               }
-<INITIAL>"*/" { strcpy(seal_yylval.error_msg,"Unmatched */"); return ERROR; }
+<INITIAL>"*/" { 
+                strcpy(seal_yylval.error_msg,"Unmatched */ for comment."); 
+                return ERROR; 
+              }
 <COMMENT>"/*" {
                 commentLevel += 1;
               }
 <COMMENT><<EOF>>  {
-                    strcpy(seal_yylval.error_msg, "EOF in comment constant");
+                    strcpy(seal_yylval.error_msg, "EOF in comment.");
                     BEGIN INITIAL;
                     return ERROR;
                   }
 <COMMENT>"*/" { 
-                if (--commentLevel == 0)
-                  BEGIN INITIAL; 
+                if (--commentLevel == 0) BEGIN INITIAL; 
               }
 <COMMENT>. {}
+
 
  /* string */
 <INITIAL>\" { BEGIN STRING; str_type = 0; yymore(); }
