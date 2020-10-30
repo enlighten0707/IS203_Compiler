@@ -109,6 +109,8 @@ TYPE_IDENTIFIER   (Float|Int|Bool|String|Void)
 
  //OBJECT_IDENTIFIER: begin with a-z, then a-z,A-z,0-9,_
 OBJECT_IDENTIFIER    [a-z][a-zA-Z0-9_]* 
+
+ // WRONG_IDENTIFIER, begin with 0-9,_? TODO
 WRONG_IDENTIFIER  [A-Z][a-zA-Z0-9_]*
 
 %Start COMMENT 
@@ -283,7 +285,7 @@ WRONG_IDENTIFIER  [A-Z][a-zA-Z0-9_]*
               } 
             }
 <STRING><<EOF>>   {
-                    strcpy(seal_yylval.error_msg, "EOF in string constant");
+                    strcpy(seal_yylval.error_msg, "EOF in string.");
                     BEGIN INITIAL;
                     yyrestart(yyin);
                     return ERROR;

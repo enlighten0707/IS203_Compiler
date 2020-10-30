@@ -622,13 +622,13 @@ int yy_flex_debug = 1;
 
 static const flex_int16_t yy_rule_linenum[65] =
     {   0,
-      121,  122,  123,  124,  125,  127,  128,  129,  130,  131,
-      132,  133,  134,  135,  137,  138,  139,  140,  142,  143,
-      144,  145,  146,  147,  148,  152,  156,  163,  168,  172,
-      179,  180,  181,  182,  183,  184,  185,  186,  187,  188,
-      190,  194,  198,  207,  208,  212,  213,  217,  221,  229,
-      232,  236,  237,  238,  258,  277,  291,  292,  293,  294,
-      295,  308,  309,  312
+      123,  124,  125,  126,  127,  129,  130,  131,  132,  133,
+      134,  135,  136,  137,  139,  140,  141,  142,  144,  145,
+      146,  147,  148,  149,  150,  154,  158,  165,  170,  174,
+      181,  182,  183,  184,  185,  186,  187,  188,  189,  190,
+      192,  196,  200,  209,  210,  214,  216,  220,  224,  232,
+      235,  239,  240,  241,  261,  280,  294,  295,  296,  297,
+      298,  311,  312,  315
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -744,10 +744,11 @@ char* getstr (const char* str) {
   */
  // Basic Data Type
  //OBJECT_IDENTIFIER: begin with a-z, then a-z,A-z,0-9,_
+ // WRONG_IDENTIFIER, begin with 0-9,_? TODO
  
 
 
-#line 751 "seal-lex.cc"
+#line 752 "seal-lex.cc"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -1030,10 +1031,10 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 119 "seal.flex"
+#line 121 "seal.flex"
 
  /* Operators */
-#line 1037 "seal-lex.cc"
+#line 1038 "seal-lex.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1121,133 +1122,133 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 121 "seal.flex"
+#line 123 "seal.flex"
 { return ('+'); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 122 "seal.flex"
+#line 124 "seal.flex"
 { return ('-'); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 123 "seal.flex"
+#line 125 "seal.flex"
 { return ('*'); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 124 "seal.flex"
+#line 126 "seal.flex"
 { return ('/'); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 125 "seal.flex"
+#line 127 "seal.flex"
 { return ('%'); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 127 "seal.flex"
+#line 129 "seal.flex"
 { return ('='); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 128 "seal.flex"
+#line 130 "seal.flex"
 { return EQUAL; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 129 "seal.flex"
+#line 131 "seal.flex"
 { return NE; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 130 "seal.flex"
+#line 132 "seal.flex"
 { return GE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 131 "seal.flex"
+#line 133 "seal.flex"
 { return LE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 132 "seal.flex"
+#line 134 "seal.flex"
 { return AND; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 133 "seal.flex"
+#line 135 "seal.flex"
 { return OR; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 134 "seal.flex"
+#line 136 "seal.flex"
 { return ('<'); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 135 "seal.flex"
+#line 137 "seal.flex"
 { return ('>'); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 137 "seal.flex"
+#line 139 "seal.flex"
 { return ('{'); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 138 "seal.flex"
+#line 140 "seal.flex"
 { return ('}'); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 139 "seal.flex"
+#line 141 "seal.flex"
 { return ('('); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 140 "seal.flex"
+#line 142 "seal.flex"
 { return (')'); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 142 "seal.flex"
+#line 144 "seal.flex"
 { return (';'); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 143 "seal.flex"
+#line 145 "seal.flex"
 { return (','); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 144 "seal.flex"
+#line 146 "seal.flex"
 { return ('.'); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 145 "seal.flex"
+#line 147 "seal.flex"
 { return (':'); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 146 "seal.flex"
+#line 148 "seal.flex"
 { return ('~'); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 147 "seal.flex"
+#line 149 "seal.flex"
 { return ('!'); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 148 "seal.flex"
+#line 150 "seal.flex"
 { return ('|'); }
 	YY_BREAK
 /* int */
 case 26:
 YY_RULE_SETUP
-#line 152 "seal.flex"
+#line 154 "seal.flex"
 {
                     seal_yylval.symbol = inttable.add_string(yytext);
                     return CONST_INT;
@@ -1255,7 +1256,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 156 "seal.flex"
+#line 158 "seal.flex"
 {
                     long number = hex2Dec(yytext);
                     seal_yylval.symbol = inttable.add_int(number);
@@ -1265,7 +1266,7 @@ YY_RULE_SETUP
 /* float */
 case 28:
 YY_RULE_SETUP
-#line 163 "seal.flex"
+#line 165 "seal.flex"
 {
                     seal_yylval.symbol = floattable.add_string(yytext);
                     return CONST_FLOAT;
@@ -1274,7 +1275,7 @@ YY_RULE_SETUP
 /* boolean */
 case 29:
 YY_RULE_SETUP
-#line 168 "seal.flex"
+#line 170 "seal.flex"
 { 
                     seal_yylval.boolean = 1;
                     return CONST_BOOL;
@@ -1282,7 +1283,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 172 "seal.flex"
+#line 174 "seal.flex"
 {
                     seal_yylval.boolean = 0;
                     return CONST_BOOL;
@@ -1291,57 +1292,57 @@ YY_RULE_SETUP
 /* identifiers */
 case 31:
 YY_RULE_SETUP
-#line 179 "seal.flex"
+#line 181 "seal.flex"
 { return VAR; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 180 "seal.flex"
+#line 182 "seal.flex"
 { return IF; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 181 "seal.flex"
+#line 183 "seal.flex"
 { return ELSE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 182 "seal.flex"
+#line 184 "seal.flex"
 { return WHILE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 183 "seal.flex"
+#line 185 "seal.flex"
 { return FOR; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 184 "seal.flex"
+#line 186 "seal.flex"
 { return BREAK; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 185 "seal.flex"
+#line 187 "seal.flex"
 { return CONTINUE; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 186 "seal.flex"
+#line 188 "seal.flex"
 { return FUNC; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 187 "seal.flex"
+#line 189 "seal.flex"
 { return RETURN; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 188 "seal.flex"
+#line 190 "seal.flex"
 { return STRUCT; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 190 "seal.flex"
+#line 192 "seal.flex"
 {
                               seal_yylval.symbol = idtable.add_string(yytext);
                               return OBJECTID;
@@ -1349,7 +1350,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 194 "seal.flex"
+#line 196 "seal.flex"
 {
                               seal_yylval.symbol = idtable.add_string(yytext);
                               return TYPEID;
@@ -1357,7 +1358,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 198 "seal.flex"
+#line 200 "seal.flex"
 {
                               strcpy(string_buf, "illegal TYPEID ");
                               strcpy(seal_yylval.error_msg, strcat(string_buf, yytext));
@@ -1367,13 +1368,13 @@ YY_RULE_SETUP
 /* comment */
 case 44:
 YY_RULE_SETUP
-#line 207 "seal.flex"
+#line 209 "seal.flex"
 {BEGIN COMMENT_LINE;}
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 208 "seal.flex"
+#line 210 "seal.flex"
 {
                     curr_lineno++; 
                     BEGIN INITIAL;
@@ -1381,12 +1382,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 212 "seal.flex"
+#line 214 "seal.flex"
 {}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 213 "seal.flex"
+#line 216 "seal.flex"
 { 
                 commentLevel += 1;
                 BEGIN COMMENT;
@@ -1394,7 +1395,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 217 "seal.flex"
+#line 220 "seal.flex"
 { 
                 strcpy(seal_yylval.error_msg,"Unmatched */ for comment."); 
                 return ERROR; 
@@ -1402,13 +1403,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 221 "seal.flex"
+#line 224 "seal.flex"
 {
                 commentLevel += 1;
               }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 224 "seal.flex"
+#line 227 "seal.flex"
 {
                     strcpy(seal_yylval.error_msg, "EOF in comment.");
                     BEGIN INITIAL;
@@ -1417,30 +1418,30 @@ case YY_STATE_EOF(COMMENT):
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 229 "seal.flex"
+#line 232 "seal.flex"
 { 
                 if (--commentLevel == 0) BEGIN INITIAL; 
               }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 232 "seal.flex"
+#line 235 "seal.flex"
 {}
 	YY_BREAK
 /* string */
 case 52:
 YY_RULE_SETUP
-#line 236 "seal.flex"
+#line 239 "seal.flex"
 { BEGIN STRING; str_type = 0; yymore(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 237 "seal.flex"
+#line 240 "seal.flex"
 { BEGIN STRING; str_type = 1; yymore(); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 238 "seal.flex"
+#line 241 "seal.flex"
 {
               if (flag == false) {
                 flag = true;
@@ -1464,7 +1465,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 258 "seal.flex"
+#line 261 "seal.flex"
 {
               if (flag == false) {
                 flag = true;
@@ -1487,7 +1488,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 277 "seal.flex"
+#line 280 "seal.flex"
 { 
               if (str_type == 0) {
                 strcpy(seal_yylval.error_msg, "String contains null character '\\0'"); 
@@ -1498,9 +1499,9 @@ YY_RULE_SETUP
             }
 	YY_BREAK
 case YY_STATE_EOF(STRING):
-#line 285 "seal.flex"
+#line 288 "seal.flex"
 {
-                    strcpy(seal_yylval.error_msg, "EOF in string constant");
+                    strcpy(seal_yylval.error_msg, "EOF in string.");
                     BEGIN INITIAL;
                     yyrestart(yyin);
                     return ERROR;
@@ -1508,29 +1509,29 @@ case YY_STATE_EOF(STRING):
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 291 "seal.flex"
+#line 294 "seal.flex"
 { yymore(); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 292 "seal.flex"
+#line 295 "seal.flex"
 { yymore(); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 293 "seal.flex"
+#line 296 "seal.flex"
 { yymore(); }
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 294 "seal.flex"
+#line 297 "seal.flex"
 { curr_lineno++; yymore(); }
 	YY_BREAK
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 295 "seal.flex"
+#line 298 "seal.flex"
 {
   if (str_type == 0) {
     strcpy(seal_yylval.error_msg, "newline in quotation must use a '\\'");
@@ -1546,19 +1547,19 @@ YY_RULE_SETUP
 /* space */
 case 62:
 YY_RULE_SETUP
-#line 308 "seal.flex"
+#line 311 "seal.flex"
 {}
 	YY_BREAK
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
-#line 309 "seal.flex"
+#line 312 "seal.flex"
 { curr_lineno++; }
 	YY_BREAK
 /* error */
 case 64:
 YY_RULE_SETUP
-#line 312 "seal.flex"
+#line 315 "seal.flex"
 {
   strcpy(yylval.error_msg, yytext);
   return ERROR;
@@ -1566,10 +1567,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 316 "seal.flex"
+#line 319 "seal.flex"
 ECHO;
 	YY_BREAK
-#line 1573 "seal-lex.cc"
+#line 1574 "seal-lex.cc"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_LINE):
 	yyterminate();
@@ -2719,6 +2720,6 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 316 "seal.flex"
+#line 319 "seal.flex"
 
 

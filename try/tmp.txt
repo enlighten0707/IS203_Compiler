@@ -16,3 +16,6 @@
     strcpy(seal_yylval.error_msg, yytext); 
 	  return (ERROR); 
   }
+
+strcpy(string_buf, "illegal TYPEID ");
+strcpy(seal_yylval.error_msg, strcat(string_buf, yytext));
