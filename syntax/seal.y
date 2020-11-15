@@ -166,7 +166,7 @@
     %type <breakStmt> breakStmt
 
     %type <expr> expr
-    %type <exprs> expr_list
+    // %type <exprs> expr_list
     %type <call> call
 
     %type <actuals> actuals
@@ -228,7 +228,10 @@
     }
     ;
 
-    variable_list : variable {
+    variable_list : {
+          $$ = nil_Variables();
+        }
+        | variable {
 					$$ = single_Variables($1);
 				}
 				| variable_list ',' variable {
@@ -257,6 +260,15 @@
 
     stmtBlock : '{' variableDecl_list stmt_list '}' {
       $$ = stmtBlock($2, $3);
+    }
+    | '{'  stmt_list '}' {
+      $$ = stmtBlock(nil_VariableDecls(), $2);
+    }
+    | '{'  variableDecl_list '}' {
+      $$ = stmtBlock($2, nil_Stmts());
+    }
+    | '{' '}' {
+      $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
     }
     ;
 
@@ -292,7 +304,7 @@
 
     // ifStmt:= if Expr StmtBlock [else StmtBlock]
     ifStmt : IF expr stmtBlock {
-      $$ = ifstmt($2, $3, nil_StmtBlock());
+      $$ = ifstmt($2, $3, stmtBlock(nil_VariableDecls(), nil_Stmts()));
     }
     | IF expr stmtBlock ELSE stmtBlock {
       $$ = ifstmt($2, $3, $5);
@@ -327,8 +339,8 @@
     | FOR expr ';' ';' stmtBlock {
       $$ = forstmt($2, no_expr(), no_expr(), $5);
     }
-    | FOR ';' ';' ';' stmtBlock {
-      $$ = forstmt(no_expr(), no_expr(), no_expr(), $5);
+    | FOR ';' ';' stmtBlock {
+      $$ = forstmt(no_expr(), no_expr(), no_expr(), $4);
     }
     ;
 
@@ -390,7 +402,7 @@
     | expr '/' expr {
       $$ = divide($1, $3);
     }
-    | expr '%' expr { // TODO: '/%' -> '%'
+    | expr '%' expr {
       $$ = mod($1, $3);
     }
     | '-' expr {
@@ -443,18 +455,14 @@
     }
 
     // actuals:= [Expr[,Expr]*]
-    actuals :  expr_list {
-      $$ = actuals($1);
-    }
-
-    expr_list : {
-					$$ = nil_Exprs();
+    actuals : {
+					$$ = nil_Actuals();
 				}
 				| expr {
-					$$ = single_Exprs($1);
+					$$ = single_Actuals(actual($1));
 				}
-				| expr_list ',' expr {
-					$$ = append_Exprs($1, single_Exprs($3));
+				| actuals ',' expr {
+					$$ = append_Actuals($1, single_Actuals(actual($3)));
 				}
 				;
 
