@@ -3,7 +3,7 @@ Program
   #1
   Call Declaration
     (name)
-    add2
+    add
     (parameters)
     (
     #1
@@ -31,24 +31,22 @@ Program
       )
       (statements)
       (
-      #3
-      Assign
-        (left value)
-        sum
-        (right value)
-        #3
-        Const_int
-          (name)
-          0
-          (type)
-        : _no_type
-        (type)
-      : _no_type
       #4
       ForStmt
         (init)
         #4
-        No_expr
+        Assign
+          (left value)
+          sum
+          (right value)
+          #4
+          Const_int
+            (name)
+            0
+            (type)
+          : _no_type
+          (type)
+        : _no_type
         (condition)
         #4
         >
@@ -102,76 +100,24 @@ Program
           (statements)
           (
           #5
-          IfStmt
-            (condition)
-            #5
-            ==
-              (OP left)
-              #5
-              %
-                (OP left)
-                #5
-                Object
-                  (name)
-                  x
-                  (type)
-                : _no_type
-                (OP right)
-                #5
-                Const_int
-                  (name)
-                  2
-                  (type)
-                : _no_type
-                (type)
-              : _no_type
-              (OP right)
-              #5
-              Const_int
-                (name)
-                0
-                (type)
-              : _no_type
-              (type)
-            (then)
-            #5
-            Statement Block
-              (variable declarations)
-              (
-              )
-              (statements)
-              (
-              #6
-              ContinueStmt
-              )
-            (else)
-            #5
-            Statement Block
-              (variable declarations)
-              (
-              )
-              (statements)
-              (
-              )
-          #8
           Assign
             (left value)
             sum
             (right value)
-            #8
+            #5
             +
               (OP left)
-              #8
-              Object
-                (name)
-                x
-                (type)
-              : _no_type
-              (OP right)
-              #8
+              #5
               Object
                 (name)
                 sum
+                (type)
+              : _no_type
+              (OP right)
+              #5
+              Object
+                (name)
+                x
                 (type)
               : _no_type
               (type)
@@ -179,10 +125,10 @@ Program
             (type)
           : _no_type
           )
-      #10
+      #7
       ReturnStmt
         (return value)
-        #10
+        #7
         Object
           (name)
           sum

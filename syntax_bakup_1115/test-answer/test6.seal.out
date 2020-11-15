@@ -142,7 +142,7 @@ Program
               (statements)
               (
               #6
-              ContinueStmt
+              BreakStmt
               )
             (else)
             #5
