@@ -144,8 +144,33 @@
     
     /* Declare types for the grammar's non-terminals. */
     %type <program> program
+    // %type <symbol> symbol
+
     %type <decls> decl_list
     %type <decl> decl
+    %type <variableDecl> variableDecl
+    %type <variableDecls> variableDecl_list
+    %type <variable> variable
+    %type <variables> variable_list
+    %type <callDecl> callDecl
+
+    %type <stmtBlock> stmtBlock
+    %type <stmt> stmt
+    %type <stmts> stmt_list
+
+    %type <ifStmt> ifStmt
+    %type <whileStmt> whileStmt
+    %type <forStmt> forStmt
+    %type <returnStmt> returnStmt
+    %type <continueStmt> continueStmt
+    %type <breakStmt> breakStmt
+
+    %type <expr> expr
+    %type <exprs> expr_list
+    %type <call> call
+
+    %type <actuals> actuals
+
 
 	// Add more here
 
@@ -158,11 +183,280 @@
 
     /* Save the root of the abstract syntax tree in a global variable. */
 	/* Add more rules here */
+
+    // Program:= [Dec]+
     program		: decl_list {
         @$ = @1;
         ast_root = program($1); 
       }
       ;
+
+    decl_list	: decl	{ /* single class */
+					$$ = single_Decls($1);
+				}
+				| decl_list decl { /* several classes */
+					$$ = append_Decls($1, single_Decls($2)); 
+				}
+				;
+    
+    // Decl:= VariableDecl| CallDecl
+    decl : variableDecl {
+      $$ = $1;
+    }
+    | callDecl {
+      $$ = $1;
+    }
+    ;
+
+    // variableDecl:=var Variable
+    variableDecl : VAR variable ';' {
+      $$ = variableDecl($2);
+    }
+    ;
+
+    // ݃Variable:= OBJECTID TYPEID
+    variable : OBJECTID TYPEID {
+      $$ = variable($1, $2);
+    }
+    ;
+
+    // TYPEID:= Int|Float|Bool|String
+
+    // CallDecl:= func object([Variable[,Variable]*]) TYPEID StmtBlock
+    callDecl : FUNC OBJECTID '(' variable_list ')' TYPEID stmtBlock {
+      $$ = callDecl($2, $4, $6, $7);
+    }
+    ;
+
+    variable_list : variable {
+					$$ = single_Variables($1);
+				}
+				| variable_list ',' variable {
+					$$ = append_Variables($1, single_Variables($3));
+				}
+				;
+
+
+    //StmtBlock:={VariableDecl* Stmt*}
+    // stmtBlock : 
+    variableDecl_list : { /* empty */ 
+					$$ = nil_VariableDecls();
+				}
+				| variableDecl_list variableDecl { /* several */
+					$$ = append_VariableDecls($1, single_VariableDecls($2));
+				}
+				;
+    
+    stmt_list : { /* empty */ 
+					$$ = nil_Stmts();
+				}
+				| stmt_list stmt { /* several */
+					$$ = append_Stmts($1, single_Stmts($2));
+				}
+				;
+
+    stmtBlock : '{' variableDecl_list stmt_list '}' {
+      $$ = stmtBlock($2, $3);
+    }
+    ;
+
+    //Stmt:= ;|Expr;|IfStmt|WhileStmt|ForStmt|BreakStmt|ContinueStmt|ReturnStmt|StmtBolck
+    stmt : ';'{
+      $$ = no_expr();
+    }
+    | expr ';' {
+      $$ = $1;
+    }
+    | ifStmt {
+      $$ = $1;
+    }
+    | whileStmt {
+      $$ = $1;
+    }
+    | forStmt {
+      $$ = $1;
+    }
+    | breakStmt {
+      $$ = $1;
+    }
+    | continueStmt {
+      $$ = $1;
+    }
+    | returnStmt {
+      $$ = $1;
+    }
+    | stmtBlock {
+      $$ = $1;
+    }
+    ;
+
+    // ifStmt:= if Expr StmtBlock [else StmtBlock]
+    ifStmt : IF expr stmtBlock {
+      $$ = ifstmt($2, $3, nil_StmtBlock());
+    }
+    | IF expr stmtBlock ELSE stmtBlock {
+      $$ = ifstmt($2, $3, $5);
+    }
+    ;
+
+    // whileStmt := while Expr StmtBlock 
+    whileStmt : WHILE expr stmtBlock {
+      $$ = whilestmt($2, $3);
+    }
+    ;
+
+    //forStmt:= for [Expr]; [Expr]; [Expr] StmtBlock
+    forStmt : FOR expr ';' expr ';' expr stmtBlock {
+      $$ = forstmt($2, $4, $6, $7);
+    }
+    | FOR expr ';' expr ';' stmtBlock {
+      $$ = forstmt($2, $4, no_expr(), $6);
+    }
+    | FOR expr ';' ';' expr stmtBlock {
+      $$ = forstmt($2, no_expr(), $5, $6);
+    }
+    | FOR ';' expr ';' expr stmtBlock {
+      $$ = forstmt(no_expr(), $3, $5, $6);
+    }
+    | FOR ';' ';' expr stmtBlock {
+      $$ = forstmt(no_expr(), no_expr(), $4, $5);
+    }
+    | FOR ';' expr ';' stmtBlock {
+      $$ = forstmt(no_expr(), $3, no_expr(), $5);
+    }
+    | FOR expr ';' ';' stmtBlock {
+      $$ = forstmt($2, no_expr(), no_expr(), $5);
+    }
+    | FOR ';' ';' ';' stmtBlock {
+      $$ = forstmt(no_expr(), no_expr(), no_expr(), $5);
+    }
+    ;
+
+    // returnStmt:= return [Expr];
+    returnStmt : RETURN expr ';' {
+      $$ = returnstmt($2);
+    }
+    | RETURN ';' {
+      $$ = returnstmt(no_expr());
+    }
+    ;
+
+    // continueStmt:= continue
+    continueStmt : CONTINUE ';' {
+      $$ = continuestmt();
+    }
+    ;
+
+    // breakStmt := break
+    breakStmt : BREAK ';' {
+      $$ = breakstmt();
+    }
+    ;
+
+    // expr
+    expr : OBJECTID '=' expr {
+      $$ = assign($1, $3);
+    }
+    | CONST_INT { // %token <symbol>  CONST_INT 268 CONST_STRING 269 CONST_FLOAT 270
+      $$ = const_int($1);
+    }
+    | CONST_FLOAT {
+      $$ = const_float($1);
+    }
+    | CONST_STRING {
+      $$ = const_string($1);
+    }
+    | CONST_BOOL { // %token <boolean> CONST_BOOL 267
+      $$ = const_bool($1);
+    }
+    | call {
+      $$ = $1;
+    }
+    | '(' expr ')' {
+      $$ = $2;
+    }
+    | OBJECTID {
+      $$ = object($1);
+    }
+    | expr '+' expr {
+      $$ = add($1, $3);
+    }
+    | expr '-' expr {
+      $$ = minus($1, $3);
+    }
+    | expr '*' expr {
+      $$ = multi($1, $3);
+    }
+    | expr '/' expr {
+      $$ = divide($1, $3);
+    }
+    | expr '%' expr { // TODO: '/%' -> '%'
+      $$ = mod($1, $3);
+    }
+    | '-' expr {
+      $$ = neg($2);
+    }
+    | expr '<' expr {
+      $$ = lt($1, $3);
+    }
+    | expr LE expr { //%token AND 274 OR 275 EQUAL 276 NE 277 GE 278 LE 279
+      $$ = le($1, $3);
+    }
+    | expr EQUAL expr {
+      $$ = equ($1, $3);
+    }
+    | expr NE expr {
+      $$ = neq($1, $3);
+    }
+    | expr GE expr {
+      $$ = ge($1, $3);
+    }
+    | expr '>' expr {
+      $$ = gt($1, $3);
+    }
+    | expr AND expr {
+      $$ = and_($1, $3);
+    }
+    | expr OR expr {
+      $$ = or_($1, $3);
+    }
+    | expr '^' expr {
+      $$ = xor_($1, $3);
+    }
+    | '!' expr {
+      $$ = not_($2);
+    }
+    | '~' expr {
+      $$ = bitnot($2);
+    }
+    | expr '&' expr {
+      $$ = bitand_($1, $3);
+    }
+    | expr '|' expr {
+      $$ = bitor_($1, $3);
+    }
+    ;
+
+    // call:= OBECTID(Actuals)
+    call : OBJECTID '(' actuals ')' {
+      $$ = call($1, $3);
+    }
+
+    // actuals:= [Expr[,Expr]*]
+    actuals :  expr_list {
+      $$ = actuals($1);
+    }
+
+    expr_list : {
+					$$ = nil_Exprs();
+				}
+				| expr {
+					$$ = single_Exprs($1);
+				}
+				| expr_list ',' expr {
+					$$ = append_Exprs($1, single_Exprs($3));
+				}
+				;
 
     // add more syntax rules here
     

@@ -136,7 +136,6 @@ typedef class BreakStmt_class *BreakStmt;
 typedef list_node<Stmt> Stmts_class;
 typedef Stmts_class *Stmts;
 
-
 StmtBlocks nil_StmtBlocks();
 StmtBlocks single_StmtBlocks(StmtBlock);
 StmtBlocks append_StmtBlocks(StmtBlocks,StmtBlocks);
