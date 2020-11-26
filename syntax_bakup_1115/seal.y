@@ -261,16 +261,17 @@
     stmtBlock : '{' variableDecl_list stmt_list '}' {
       $$ = stmtBlock($2, $3);
     }
-    | '{'  stmt_list '}' {
-      $$ = stmtBlock(nil_VariableDecls(), $2);
-    }
-    | '{'  variableDecl_list '}' {
-      $$ = stmtBlock($2, nil_Stmts());
-    }
-    | '{' '}' {
-      $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
-    }
     ;
+    // | '{'  stmt_list '}' {
+    //   $$ = stmtBlock(nil_VariableDecls(), $2);
+    // }
+    // | '{'  variableDecl_list '}' {
+    //   $$ = stmtBlock($2, nil_Stmts());
+    // }
+    // | '{' '}' {
+    //   $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
+    // }
+    // ;
 
     //Stmt:= ;|Expr;|IfStmt|WhileStmt|ForStmt|BreakStmt|ContinueStmt|ReturnStmt|StmtBolck
     stmt : ';'{
@@ -449,7 +450,7 @@
     }
     ;
 
-    // call:= OBECTID(Actuals)
+    // call:= OBJECTID(Actuals)
     call : OBJECTID '(' actuals ')' {
       $$ = call($1, $3);
     }

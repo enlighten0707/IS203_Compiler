@@ -166,7 +166,6 @@
     %type <breakStmt> breakStmt
 
     %type <expr> expr
-    // %type <exprs> expr_list
     %type <call> call
 
     %type <actuals> actuals
@@ -175,8 +174,18 @@
 	// Add more here
 
     /* Precedence declarations go here. */
+    // tokens: AND-"&&", OR-"||", EQUAL-"==", NE-"!=", 
+    // GE-">=", LE-"<="
 	  %nonassoc '='
-
+    %right OR
+    %right AND
+    %nonassoc EQUAL NE
+    %nonassoc '<' LE GE '>'
+    %left '+' '-'
+    %left '*' '/' '%'
+    %nonassoc minusminus '!'
+    %left '~' '&' '|' '^'
+    
 	// Add more here
     
 %%
@@ -261,16 +270,17 @@
     stmtBlock : '{' variableDecl_list stmt_list '}' {
       $$ = stmtBlock($2, $3);
     }
-    | '{'  stmt_list '}' {
-      $$ = stmtBlock(nil_VariableDecls(), $2);
-    }
-    | '{'  variableDecl_list '}' {
-      $$ = stmtBlock($2, nil_Stmts());
-    }
-    | '{' '}' {
-      $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
-    }
     ;
+    // | '{'  stmt_list '}' {
+    //   $$ = stmtBlock(nil_VariableDecls(), $2);
+    // }
+    // | '{'  variableDecl_list '}' {
+    //   $$ = stmtBlock($2, nil_Stmts());
+    // }
+    // | '{' '}' {
+    //   $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
+    // }
+    // ;
 
     //Stmt:= ;|Expr;|IfStmt|WhileStmt|ForStmt|BreakStmt|ContinueStmt|ReturnStmt|StmtBolck
     stmt : ';'{
@@ -405,7 +415,7 @@
     | expr '%' expr {
       $$ = mod($1, $3);
     }
-    | '-' expr {
+    | '-' expr %prec minusminus {
       $$ = neg($2);
     }
     | expr '<' expr {
