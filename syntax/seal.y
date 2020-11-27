@@ -144,7 +144,6 @@
     
     /* Declare types for the grammar's non-terminals. */
     %type <program> program
-    // %type <symbol> symbol
 
     %type <decls> decl_list
     %type <decl> decl
@@ -169,7 +168,7 @@
     %type <call> call
 
     %type <actuals> actuals
-
+    %type <actual> actual
 
 	// Add more here
 
@@ -193,14 +192,15 @@
     /* Save the root of the abstract syntax tree in a global variable. */
 	/* Add more rules here */
 
-    // Program:= [Dec]+
+    // 1---Program:= [Dec]+
     program		: decl_list {
         @$ = @1;
         ast_root = program($1); 
       }
       ;
 
-    decl_list	: decl	{ /* single class */
+    // decl: Decls, decl_list: Decls
+    decl_list	: decl	{ /* single class */ 
 					$$ = single_Decls($1);
 				}
 				| decl_list decl { /* several classes */
@@ -208,7 +208,7 @@
 				}
 				;
     
-    // Decl:= VariableDecl| CallDecl
+    // 2---Decl:= VariableDecl| CallDecl
     decl : variableDecl {
       $$ = $1;
     }
@@ -217,26 +217,30 @@
     }
     ;
 
-    // variableDecl:=var Variable
+    // 3---variableDecl:=var Variable
+    // variableDecl: VariableDecl, variable: Variable
     variableDecl : VAR variable ';' {
       $$ = variableDecl($2);
     }
     ;
 
-    // ݃Variable:= OBJECTID TYPEID
+    // ݃4---Variable:= OBJECTID TYPEID
     variable : OBJECTID TYPEID {
       $$ = variable($1, $2);
     }
     ;
 
-    // TYPEID:= Int|Float|Bool|String
+    // 5---TYPEID:= Int|Float|Bool|String
 
-    // CallDecl:= func object([Variable[,Variable]*]) TYPEID StmtBlock
+    // 6---CallDecl:= func object([Variable[,Variable]*]) TYPEID StmtBlock
+    // callDecl: CallDecl
     callDecl : FUNC OBJECTID '(' variable_list ')' TYPEID stmtBlock {
       $$ = callDecl($2, $4, $6, $7);
     }
     ;
 
+    // variable_list:= [Variable[,Variable]*]
+    // variable_list: Variables
     variable_list : {
           $$ = nil_Variables();
         }
@@ -248,45 +252,49 @@
 				}
 				;
 
+    //7---StmtBlock:={VariableDecl* Stmt*}
+    stmtBlock : '{' '}'{
+      $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
+    }
+    | '{' variableDecl_list '}' {
+      $$ = stmtBlock($2, nil_Stmts());
+    }
+    | '{' stmt_list '}' {
+      $$ = stmtBlock(nil_VariableDecls(), $2);
+    }
+    | '{' variableDecl_list stmt_list '}' {
+      $$ = stmtBlock($2, $3);
+    }
+    ;
 
-    //StmtBlock:={VariableDecl* Stmt*}
-    // stmtBlock : 
-    variableDecl_list : { /* empty */ 
-					$$ = nil_VariableDecls();
-				}
+    // variableDecl_list:= VariableDecl*
+    // variableDecl_list: VariableDecls
+    variableDecl_list : variableDecl{
+          $$ = single_VariableDecls($1);
+        }
 				| variableDecl_list variableDecl { /* several */
 					$$ = append_VariableDecls($1, single_VariableDecls($2));
 				}
 				;
     
-    stmt_list : { /* empty */ 
+    // stmt_list := Stmt*
+    // stmt_list: Stmts
+    stmt_list : ';' { /* empty */ 
 					$$ = nil_Stmts();
 				}
+        | stmt {
+          $$ = single_Stmts($1);
+        } 
 				| stmt_list stmt { /* several */
 					$$ = append_Stmts($1, single_Stmts($2));
 				}
+        | stmt_list ';' {
+        }
 				;
 
-    stmtBlock : '{' variableDecl_list stmt_list '}' {
-      $$ = stmtBlock($2, $3);
-    }
-    ;
-    // | '{'  stmt_list '}' {
-    //   $$ = stmtBlock(nil_VariableDecls(), $2);
-    // }
-    // | '{'  variableDecl_list '}' {
-    //   $$ = stmtBlock($2, nil_Stmts());
-    // }
-    // | '{' '}' {
-    //   $$ = stmtBlock(nil_VariableDecls(), nil_Stmts());
-    // }
-    // ;
-
-    //Stmt:= ;|Expr;|IfStmt|WhileStmt|ForStmt|BreakStmt|ContinueStmt|ReturnStmt|StmtBolck
-    stmt : ';'{
-      $$ = no_expr();
-    }
-    | expr ';' {
+    //8---Stmt:= ;|Expr;|IfStmt|WhileStmt|ForStmt|BreakStmt|ContinueStmt|ReturnStmt|StmtBolck
+    // stmt: Stmt
+    stmt : expr ';' {
       $$ = $1;
     }
     | ifStmt {
@@ -312,7 +320,7 @@
     }
     ;
 
-    // ifStmt:= if Expr StmtBlock [else StmtBlock]
+    //9---ifStmt:= if Expr StmtBlock [else StmtBlock]
     ifStmt : IF expr stmtBlock {
       $$ = ifstmt($2, $3, stmtBlock(nil_VariableDecls(), nil_Stmts()));
     }
@@ -321,13 +329,13 @@
     }
     ;
 
-    // whileStmt := while Expr StmtBlock 
+    //10---whileStmt := while Expr StmtBlock 
     whileStmt : WHILE expr stmtBlock {
       $$ = whilestmt($2, $3);
     }
     ;
 
-    //forStmt:= for [Expr]; [Expr]; [Expr] StmtBlock
+    //11---forStmt:= for [Expr]; [Expr]; [Expr] StmtBlock
     forStmt : FOR expr ';' expr ';' expr stmtBlock {
       $$ = forstmt($2, $4, $6, $7);
     }
@@ -354,7 +362,7 @@
     }
     ;
 
-    // returnStmt:= return [Expr];
+    // 12---returnStmt:= return [Expr];
     returnStmt : RETURN expr ';' {
       $$ = returnstmt($2);
     }
@@ -363,19 +371,19 @@
     }
     ;
 
-    // continueStmt:= continue
+    // 13---continueStmt:= continue
     continueStmt : CONTINUE ';' {
       $$ = continuestmt();
     }
     ;
 
-    // breakStmt := break
+    // 14---breakStmt := break
     breakStmt : BREAK ';' {
       $$ = breakstmt();
     }
     ;
 
-    // expr
+    // 15---expr
     expr : OBJECTID '=' expr {
       $$ = assign($1, $3);
     }
@@ -459,22 +467,28 @@
     }
     ;
 
-    // call:= OBECTID(Actuals)
+    // 16---call:= OBECTID(Actuals)
     call : OBJECTID '(' actuals ')' {
       $$ = call($1, $3);
     }
+    | OBJECTID '(' ')' { 
+      $$ = call($1, nil_Actuals()); 
+    }; 
 
-    // actuals:= [Expr[,Expr]*]
-    actuals : {
-					$$ = nil_Actuals();
+    // 17---actuals:= [Expr[,Expr]*]
+    // actuals: Actuals
+    actuals : actual {
+					$$ = single_Actuals($1);
 				}
-				| expr {
-					$$ = single_Actuals(actual($1));
-				}
-				| actuals ',' expr {
-					$$ = append_Actuals($1, single_Actuals(actual($3)));
+				| actuals ',' actual {
+					$$ = append_Actuals($1, single_Actuals($3));
 				}
 				;
+
+    actual : expr {
+      $$ = actual($1);
+    }
+    ;
 
     // add more syntax rules here
     
