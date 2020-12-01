@@ -152,55 +152,232 @@ Symbol Actual_class::checkType(){
 }
 
 Symbol Assign_class::checkType(){
+    Symbol rtype = value->checkType();
+    // lvalue not exist
+    if (objectEnv.lookup(lvalue)==NULL){
+        semant_error(this) << "Left value" << lvalue << "has not been defined.\n";
+        setType(rtype);
+        return type; //here return which type?
+    }
 
+    // ltype != rtype
+    Symbol ltype = *(objectEnv.lookup(lvalue));
+    if (!sameType(ltype, rtype)){
+        semant_error(this) << "Left value" << lvalue << "is not the same type as right value" << value << ".\n";
+    } // type=void?
+    
+    setType(ltype);
+    return ltype;
 }
 
 Symbol Add_class::checkType(){
- 
+    // allowed types: Int+Int, Int+Float, Float+Int, Float+Float
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
+
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Int);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Float);
+    else {
+        semant_error(this) << "Cannot add a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Minus_class::checkType(){
- 
+    // allowed types: Int+Int, Int+Float, Float+Int, Float+Float
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
+
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Int);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Float);
+    else {
+        semant_error(this) << "Cannot minus a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Multi_class::checkType(){
- 
+    // allowed types: Int+Int, Int+Float, Float+Int, Float+Float
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
+
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Int);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Float);
+    else {
+        semant_error(this) << "Cannot multiply a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Divide_class::checkType(){
+    // TODO: divided by 0?
+    // allowed types: Int+Int, Int+Float, Float+Int, Float+Float
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Int);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Float);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Float);
+    else {
+        semant_error(this) << "Cannot divide a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Mod_class::checkType(){
+    // allowed types: Int mod Int
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Int);
+    else {
+        semant_error(this) << "Cannot mod a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Neg_class::checkType(){
+    // allowed: Int/Float
+    Symbol type1 = e1->checkType();
+    if (sameType(type1,Int))
+        setType(Int);
+    else if (sameType(type1,Float))
+        setType(Float);
+    else {
+        semant_error(this) << "Cannot neg a " << type1->get_string() << ".\n";
+        setType(Void);
+    }
 
+    return type;
 }
 
 Symbol Lt_class::checkType(){
+    // TODO: comp others, such as tow Bools?
+    // allowed types: Int+Int, Int+Float, Float+Int, Float+Float
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Bool);
+    else {
+        semant_error(this) << "Cannot compare a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Le_class::checkType(){
+    // allowed types: Int+Int, Int+Float, Float+Int, Float+Float
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Bool);
+    else {
+        semant_error(this) << "Cannot compare a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Equ_class::checkType(){
+    // allowed: Int==Int, Int==Float, Float==Int, Float==Int, Bool==Bool
+    // TODO
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
 }
 
 Symbol Neq_class::checkType(){
-
+    
 }
 
 Symbol Ge_class::checkType(){
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Bool);
+    else {
+        semant_error(this) << "Cannot compare a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol Gt_class::checkType(){
+    Symbol type1 = e1->checkType();
+    Symbol type2 = e2->checkType();
 
+    if (sameType(type1,Int) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1,Int) && sameType(type2, Float))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Int))
+        setType(Bool);
+    else if (sameType(type1, Float) && sameType(type2, Float)) 
+        setType(Bool);
+    else {
+        semant_error(this) << "Cannot compare a " << type1->get_string() << "and a " << type2->get_string() << ".\n";
+        setType(Void);
+    }
+
+    return type;
 }
 
 Symbol And_class::checkType(){
@@ -262,10 +439,13 @@ Symbol No_expr_class::checkType(){
 
 void Program_class::semant() {
     initialize_constants();
-    install_calls(decls);
-    check_main();
-    install_globalVars(decls);
-    check_calls(decls);
+    install_calls(decls); // build global calls list, including main
+    // check_main();
+
+    objectEnv.enterscope();
+    install_globalVars(decls); // build global vars list
+    check_calls(decls); // check
+    objectEnv.exitscope();
     
     if (semant_errors > 0) {
         cerr << "Compilation halted due to static semantic errors." << endl;
