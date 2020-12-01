@@ -1,0 +1,177 @@
+#1
+Program
+  #1
+  Call Declaration
+    (name)
+    main
+    (parameters)
+    (
+    )
+    (return type)
+    Void
+    (body)
+    #1
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #2
+      Call
+        (name)
+        a
+        (actual parameters)
+        (
+        )
+        (type)
+      : _no_type
+      #3
+      Call
+        (name)
+        b
+        (actual parameters)
+        (
+        )
+        (type)
+      : _no_type
+      #4
+      Assign
+        (left value)
+        c
+        (right value)
+        #4
+        +
+          (OP left)
+          #4
+          Call
+            (name)
+            a
+            (actual parameters)
+            (
+            )
+            (type)
+          : _no_type
+          (OP right)
+          #4
+          Call
+            (name)
+            b
+            (actual parameters)
+            (
+            )
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #5
+      Assign
+        (left value)
+        d
+        (right value)
+        #5
+        +
+          (OP left)
+          #5
+          Call
+            (name)
+            a
+            (actual parameters)
+            (
+            )
+            (type)
+          : _no_type
+          (OP right)
+          #5
+          Call
+            (name)
+            s
+            (actual parameters)
+            (
+            #5
+            Actual
+              (expr)
+              #5
+              Const_int
+                (name)
+                1
+                (type)
+              : _no_type
+              (type)
+            : _no_type
+            #5
+            Actual
+              (expr)
+              #5
+              Const_int
+                (name)
+                2
+                (type)
+              : _no_type
+              (type)
+            : _no_type
+            )
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #6
+      Assign
+        (left value)
+        e
+        (right value)
+        #6
+        Call
+          (name)
+          f1
+          (actual parameters)
+          (
+          #6
+          Actual
+            (expr)
+            #6
+            Call
+              (name)
+              f2
+              (actual parameters)
+              (
+              #6
+              Actual
+                (expr)
+                #6
+                Call
+                  (name)
+                  f3
+                  (actual parameters)
+                  (
+                  )
+                  (type)
+                : _no_type
+                (type)
+              : _no_type
+              #6
+              Actual
+                (expr)
+                #6
+                Const_int
+                  (name)
+                  2
+                  (type)
+                : _no_type
+                (type)
+              : _no_type
+              )
+              (type)
+            : _no_type
+            (type)
+          : _no_type
+          )
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      )

@@ -1,0 +1,7 @@
+func ifstmt(x Int) Float {
+    if x {
+        var y Int;
+        y = x;
+    }
+    if x { x ;} else {x; }
+}

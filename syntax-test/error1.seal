@@ -1,0 +1,3 @@
+func test1(, a Int) Int {
+    return b(, a);
+}

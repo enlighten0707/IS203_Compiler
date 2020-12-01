@@ -1,0 +1,64 @@
+#1
+Program
+  #1
+  Call Declaration
+    (name)
+    whilestmt
+    (parameters)
+    (
+    #1
+    Variable
+      (name)
+      x
+      (type)
+      Int
+    )
+    (return type)
+    Void
+    (body)
+    #1
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #2
+      WhileStmt
+        (condition)
+        #2
+        Object
+          (name)
+          x
+          (type)
+        : _no_type
+        (body)
+        #2
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #2
+          No_expr
+          )
+      #3
+      WhileStmt
+        (condition)
+        #3
+        Object
+          (name)
+          x
+          (type)
+        : _no_type
+        (body)
+        #3
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          )
+      )

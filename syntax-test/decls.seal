@@ -1,0 +1,11 @@
+var a Int;
+
+func fun1() Void {
+
+}
+
+var b Int;
+
+func fun2() Int {
+
+}

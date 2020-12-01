@@ -1,0 +1,7 @@
+func test1(x Float, y Float, z Int) Float {
+    return x + y + z;
+}
+
+func test2() Int {
+    return 1;
+}

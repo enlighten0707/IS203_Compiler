@@ -4,5 +4,5 @@
 */
 
 func zhanzhuanxiangchu(a Int, b Int) Int{
-    ;
+    a(,x);
 }

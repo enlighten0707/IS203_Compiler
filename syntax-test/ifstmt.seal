@@ -1,0 +1,4 @@
+func ifstmt(x Int) Float {
+    if x { x;}
+    if x { x ;} else {x; }
+}

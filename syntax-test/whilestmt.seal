@@ -1,0 +1,4 @@
+func whilestmt(x Int) Void {
+    while(x) { ;}
+    while(x) {}
+}

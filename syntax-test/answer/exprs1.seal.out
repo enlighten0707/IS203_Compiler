@@ -1,0 +1,474 @@
+#1
+Program
+  #1
+  Call Declaration
+    (name)
+    calcu
+    (parameters)
+    (
+    #1
+    Variable
+      (name)
+      x
+      (type)
+      Int
+    #1
+    Variable
+      (name)
+      y
+      (type)
+      Int
+    )
+    (return type)
+    Float
+    (body)
+    #1
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #2
+      Assign
+        (left value)
+        a
+        (right value)
+        #2
+        +
+          (OP left)
+          #2
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #2
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #3
+      Assign
+        (left value)
+        b
+        (right value)
+        #3
+        -
+          (OP left)
+          #3
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #3
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #4
+      Assign
+        (left value)
+        c
+        (right value)
+        #4
+        *
+          (OP left)
+          #4
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #4
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #5
+      Assign
+        (left value)
+        d
+        (right value)
+        #5
+        /
+          (OP left)
+          #5
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #5
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #6
+      Assign
+        (left value)
+        e
+        (right value)
+        #6
+        %
+          (OP left)
+          #6
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #6
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #7
+      Assign
+        (left value)
+        f
+        (right value)
+        #7
+        ~
+          (OP)
+          #7
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #8
+      Assign
+        (left value)
+        g
+        (right value)
+        #8
+        &
+          (OP left)
+          #8
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #8
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #9
+      Assign
+        (left value)
+        h
+        (right value)
+        #9
+        |
+          (OP left)
+          #9
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #9
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #10
+      Assign
+        (left value)
+        i
+        (right value)
+        #10
+        ^
+          (OP left)
+          #10
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #10
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #11
+      Assign
+        (left value)
+        j
+        (right value)
+        #11
+        &&
+          (OP left)
+          #11
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #11
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #12
+      Assign
+        (left value)
+        k
+        (right value)
+        #12
+        ||
+          (OP left)
+          #12
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #12
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #13
+      Assign
+        (left value)
+        l
+        (right value)
+        #13
+        !
+          (OP)
+          #13
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #14
+      Assign
+        (left value)
+        m
+        (right value)
+        #14
+        >
+          (OP left)
+          #14
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #14
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #15
+      Assign
+        (left value)
+        n
+        (right value)
+        #15
+        >=
+          (OP left)
+          #15
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #15
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #16
+      Assign
+        (left value)
+        o
+        (right value)
+        #16
+        ==
+          (OP left)
+          #16
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #16
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #17
+      Assign
+        (left value)
+        p
+        (right value)
+        #17
+        <
+          (OP left)
+          #17
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #17
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #18
+      Assign
+        (left value)
+        q
+        (right value)
+        #18
+        <=
+          (OP left)
+          #18
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #18
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      #19
+      Assign
+        (left value)
+        r
+        (right value)
+        #19
+        -
+          (OP)
+          #19
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #20
+      Assign
+        (left value)
+        s
+        (right value)
+        #20
+        !=
+          (OP left)
+          #20
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #20
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (type)
+      : _no_type
+      )

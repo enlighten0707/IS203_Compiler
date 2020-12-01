@@ -1,0 +1,113 @@
+#1
+Program
+  #1
+  Call Declaration
+    (name)
+    ifstmt
+    (parameters)
+    (
+    #1
+    Variable
+      (name)
+      x
+      (type)
+      Int
+    )
+    (return type)
+    Float
+    (body)
+    #1
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #2
+      IfStmt
+        (condition)
+        #2
+        Object
+          (name)
+          x
+          (type)
+        : _no_type
+        (then)
+        #2
+        Statement Block
+          (variable declarations)
+          (
+          #3
+          Variable Declaration
+            #3
+            Variable
+              (name)
+              y
+              (type)
+              Int
+          )
+          (statements)
+          (
+          #4
+          Assign
+            (left value)
+            y
+            (right value)
+            #4
+            Object
+              (name)
+              x
+              (type)
+            : _no_type
+            (type)
+          : _no_type
+          )
+        (else)
+        #2
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          )
+      #6
+      IfStmt
+        (condition)
+        #6
+        Object
+          (name)
+          x
+          (type)
+        : _no_type
+        (then)
+        #6
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #6
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          )
+        (else)
+        #6
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #6
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          )
+      )

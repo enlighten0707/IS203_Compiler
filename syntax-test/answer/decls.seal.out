@@ -1,0 +1,54 @@
+#1
+Program
+  #1
+  Variable Declaration
+    #1
+    Variable
+      (name)
+      a
+      (type)
+      Int
+  #3
+  Call Declaration
+    (name)
+    fun1
+    (parameters)
+    (
+    )
+    (return type)
+    Void
+    (body)
+    #3
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      )
+  #7
+  Variable Declaration
+    #7
+    Variable
+      (name)
+      b
+      (type)
+      Int
+  #9
+  Call Declaration
+    (name)
+    fun2
+    (parameters)
+    (
+    )
+    (return type)
+    Int
+    (body)
+    #9
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      )

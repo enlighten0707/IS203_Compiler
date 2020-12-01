@@ -1,0 +1,21 @@
+func calcu(x Int, y Int) Float {
+    a = x + y;
+    b = x - y;
+    c = x * y;
+    d = x / y;
+    e = x % y;
+    f = ~x;
+    g = x & y;
+    h = x | y;
+    i = x ^ y;
+    j = x && y;
+    k = x || y;
+    l = !x;
+    m = x > y;
+    n = x >= y;
+    o = x == y;
+    p = x < y;
+    q = x <= y;
+    r = -x;
+    s = x != y;
+}

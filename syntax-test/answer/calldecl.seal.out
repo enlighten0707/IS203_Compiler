@@ -1,0 +1,98 @@
+#1
+Program
+  #1
+  Call Declaration
+    (name)
+    test1
+    (parameters)
+    (
+    #1
+    Variable
+      (name)
+      x
+      (type)
+      Float
+    #1
+    Variable
+      (name)
+      y
+      (type)
+      Float
+    #1
+    Variable
+      (name)
+      z
+      (type)
+      Int
+    )
+    (return type)
+    Float
+    (body)
+    #1
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #2
+      ReturnStmt
+        (return value)
+        #2
+        +
+          (OP left)
+          #2
+          +
+            (OP left)
+            #2
+            Object
+              (name)
+              x
+              (type)
+            : _no_type
+            (OP right)
+            #2
+            Object
+              (name)
+              y
+              (type)
+            : _no_type
+            (type)
+          : _no_type
+          (OP right)
+          #2
+          Object
+            (name)
+            z
+            (type)
+          : _no_type
+          (type)
+        : _no_type
+      )
+  #5
+  Call Declaration
+    (name)
+    test2
+    (parameters)
+    (
+    )
+    (return type)
+    Int
+    (body)
+    #5
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #6
+      ReturnStmt
+        (return value)
+        #6
+        Const_int
+          (name)
+          1
+          (type)
+        : _no_type
+      )

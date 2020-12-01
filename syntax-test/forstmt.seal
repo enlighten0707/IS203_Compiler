@@ -1,0 +1,12 @@
+func forstmt(x Int) Void {
+    for x; x; x {}
+    for ; x ; x {}
+    for x;  ; x {}
+    for x; x ;  {}
+    for ;  ; x {}
+    for ; x ;  {}
+    for x; ;  {}
+    for ;  ;  {}
+    for x; x ; x {break;}
+    for x; x ; x {continue;}
+}
