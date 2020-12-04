@@ -1,0 +1,109 @@
+#5
+Program
+  #5
+  Call Declaration
+    (name)
+    main
+    (parameters)
+    (
+    )
+    (return type)
+    Void
+    (body)
+    #5
+    Statement Block
+      (variable declarations)
+      (
+      #6
+      Variable Declaration
+        #6
+        Variable
+          (name)
+          c
+          (type)
+          Bool
+      #7
+      Variable Declaration
+        #7
+        Variable
+          (name)
+          a
+          (type)
+          Int
+      )
+      (statements)
+      (
+      #8
+      Assign
+        (left value)
+        a
+        (right value)
+        #8
+        Const_int
+          (name)
+          100
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #9
+      IfStmt
+        (condition)
+        #9
+        ==
+          (OP left)
+          #9
+          Object
+            (name)
+            a
+            (type)
+          : _no_type
+          (OP right)
+          #9
+          Const_int
+            (name)
+            100
+            (type)
+          : _no_type
+          (type)
+        (then)
+        #9
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #10
+          Assign
+            (left value)
+            c
+            (right value)
+            #10
+            Const_bool
+              (name)
+              1
+              (type)
+            : _no_type
+            (type)
+          : _no_type
+          )
+        (else)
+        #9
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          )
+      #12
+      ReturnStmt
+        (return value)
+        #12
+        Object
+          (name)
+          c
+          (type)
+        : _no_type
+      )

@@ -36,7 +36,23 @@ make parser
 ## Semant
 - [ ] 对照standford cs143 readme.md的要求看看
 - [ ] 一定把各种情况考虑完整，不行就枚举！！！
-- [ ] 
+- [ ] 和标准程序对比，看看报错字符串怎么写
+
+### 命令
+```
+构建语义分析器:
+make semant
+
+测试某个样例
+./semant < test.seal
+
+清理临时文件
+make clean
+
+测试样例
+./judge.sh
+bash judge.sh
+```
 ### 考察点
 * [ ] 是否有`main`函数
 * [ ] `main`函数返回值为Void

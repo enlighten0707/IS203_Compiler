@@ -1,0 +1,203 @@
+#5
+Program
+  #5
+  Call Declaration
+    (name)
+    max
+    (parameters)
+    (
+    #5
+    Variable
+      (name)
+      x
+      (type)
+      Float
+    #5
+    Variable
+      (name)
+      y
+      (type)
+      Float
+    )
+    (return type)
+    Float
+    (body)
+    #5
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #6
+      IfStmt
+        (condition)
+        #6
+        >
+          (OP left)
+          #6
+          Object
+            (name)
+            x
+            (type)
+          : _no_type
+          (OP right)
+          #6
+          Object
+            (name)
+            y
+            (type)
+          : _no_type
+          (type)
+        (then)
+        #6
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #7
+          ReturnStmt
+            (return value)
+            #7
+            Object
+              (name)
+              x
+              (type)
+            : _no_type
+          )
+        (else)
+        #6
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          )
+      #9
+      ReturnStmt
+        (return value)
+        #9
+        Object
+          (name)
+          y
+          (type)
+        : _no_type
+      )
+  #12
+  Call Declaration
+    (name)
+    main
+    (parameters)
+    (
+    )
+    (return type)
+    Void
+    (body)
+    #12
+    Statement Block
+      (variable declarations)
+      (
+      #13
+      Variable Declaration
+        #13
+        Variable
+          (name)
+          a
+          (type)
+          Float
+      #14
+      Variable Declaration
+        #14
+        Variable
+          (name)
+          b
+          (type)
+          Float
+      #15
+      Variable Declaration
+        #15
+        Variable
+          (name)
+          max_num
+          (type)
+          Float
+      )
+      (statements)
+      (
+      #17
+      Assign
+        (left value)
+        a
+        (right value)
+        #17
+        Const_float
+          (name)
+          22.2
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #18
+      Assign
+        (left value)
+        b
+        (right value)
+        #18
+        Const_float
+          (name)
+          33.3
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #19
+      Assign
+        (left value)
+        max_num
+        (right value)
+        #19
+        Call
+          (name)
+          max
+          (actual parameters)
+          (
+          #19
+          Actual
+            (expr)
+            #19
+            Object
+              (name)
+              a
+              (type)
+            : _no_type
+            (type)
+          : _no_type
+          #19
+          Actual
+            (expr)
+            #19
+            Object
+              (name)
+              b
+              (type)
+            : _no_type
+            (type)
+          : _no_type
+          )
+          (type)
+        : _no_type
+        (type)
+      : _no_type
+      #20
+      ReturnStmt
+        (return value)
+        #20
+        Object
+          (name)
+          c
+          (type)
+        : _no_type
+      )
