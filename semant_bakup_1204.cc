@@ -729,7 +729,14 @@ Symbol Const_bool_class::checkType(){
 }
 
 Symbol Object_class::checkType(){
-
+    if(!objectEnv.lookup(var)) {
+        // ERROR: undefined object
+        semant_error(this) << "object " << var->get_string() << " has not been defined.\n";
+        return Void;
+    }
+    Symbol object_type = *objectEnv.lookup(var);
+    setType(object_type);
+    return object_type;
 }
 
 Symbol No_expr_class::checkType(){
