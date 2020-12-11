@@ -1,0 +1,14 @@
+func call(a Int, b Int) Void{
+	return;
+}
+
+func main() Void{
+	var a Int;
+    var b Int;
+	var i Int;
+    var j Int;
+    var k Int;
+
+	call(a,c);
+	return;
+}

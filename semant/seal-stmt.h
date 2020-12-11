@@ -30,6 +30,7 @@ public:
 	virtual void dump_with_types(ostream&,int) = 0; 
 	virtual void dump(ostream&,int) = 0;
 	virtual void check(Symbol) = 0;
+	virtual bool isRETURN(){return false;}
 };
 
 class StmtBlock_class : public Stmt_class {
@@ -126,6 +127,7 @@ public:
 	void check(Symbol);
     void dump_with_types(ostream&,int);
     void dump(ostream& stream, int n);
+	bool isRETURN(){return true;}
 };
 
 class ContinueStmt_class : public Stmt_class {
