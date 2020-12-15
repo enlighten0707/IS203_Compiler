@@ -1,14 +1,23 @@
-func call(a Int, b Int) Void{
-	return;
+/* 
+this a false simple example of SEAL 
+"20: object c has not been defined."
+*/
+func max(x Float,y Float) Float{
+	if x>y{
+        	return x;
+	}
 }
 
 func main() Void{
-	var a Int;
-    var b Int;
-	var i Int;
-    var j Int;
-    var k Int;
+	var a Float;
+	var b Float;
+	var c Bool;
+	var d Int;
+	var max_num Float;
 
-	call(a,c);
-	return;
+	a=22.2;
+	b=33.3;
+	d=(a*c)+(b*c);
+	max_num=max(a,b);
+	return c;
 }

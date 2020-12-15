@@ -1,0 +1,206 @@
+#1
+Program
+  #1
+  Call Declaration
+    (name)
+    main
+    (parameters)
+    (
+    )
+    (return type)
+    Void
+    (body)
+    #1
+    Statement Block
+      (variable declarations)
+      (
+      #2
+      Variable Declaration
+        #2
+        Variable
+          (name)
+          s
+          (type)
+          Int
+      #3
+      Variable Declaration
+        #3
+        Variable
+          (name)
+          i
+          (type)
+          Int
+      )
+      (statements)
+      (
+      #4
+      Assign
+        (left value)
+        i
+        (right value)
+        #4
+        Const_int
+          (name)
+          0
+          (type)
+        : Int
+        (type)
+      : Int
+      #5
+      Assign
+        (left value)
+        s
+        (right value)
+        #5
+        Const_int
+          (name)
+          0
+          (type)
+        : Int
+        (type)
+      : Int
+      #6
+      IfStmt
+        (condition)
+        #6
+        Const_bool
+          (name)
+          1
+          (type)
+        : Bool
+        (then)
+        #6
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #7
+          Call
+            (name)
+            printf
+            (actual parameters)
+            (
+            #7
+            Actual
+              (expr)
+              #7
+              Const_string
+                (name)
+                yes!
+                (type)
+              : String
+              (type)
+            : String
+            )
+            (type)
+          : Void
+          #8
+          ReturnStmt
+            (return value)
+            #8
+            No_expr
+          )
+        (else)
+        #6
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          )
+      #10
+      WhileStmt
+        (condition)
+        #10
+        <
+          (OP left)
+          #10
+          Object
+            (name)
+            i
+            (type)
+          : Int
+          (OP right)
+          #10
+          Const_int
+            (name)
+            100
+            (type)
+          : Int
+          (type)
+        : Bool
+        (body)
+        #10
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #11
+          Assign
+            (left value)
+            s
+            (right value)
+            #11
+            +
+              (OP left)
+              #11
+              Object
+                (name)
+                s
+                (type)
+              : Int
+              (OP right)
+              #11
+              Object
+                (name)
+                i
+                (type)
+              : Int
+              (type)
+            : Int
+            (type)
+          : Int
+          )
+      #13
+      Call
+        (name)
+        printf
+        (actual parameters)
+        (
+        #13
+        Actual
+          (expr)
+          #13
+          Const_string
+            (name)
+            sum = %lld
+
+            (type)
+          : String
+          (type)
+        : String
+        #13
+        Actual
+          (expr)
+          #13
+          Object
+            (name)
+            s
+            (type)
+          : Int
+          (type)
+        : Int
+        )
+        (type)
+      : Void
+      #14
+      ReturnStmt
+        (return value)
+        #14
+        No_expr
+      )

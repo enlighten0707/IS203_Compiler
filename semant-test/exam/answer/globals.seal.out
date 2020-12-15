@@ -1,0 +1,157 @@
+#1
+Program
+  #1
+  Variable Declaration
+    #1
+    Variable
+      (name)
+      x
+      (type)
+      Int
+  #3
+  Call Declaration
+    (name)
+    main
+    (parameters)
+    (
+    )
+    (return type)
+    Void
+    (body)
+    #3
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #4
+      Call
+        (name)
+        printf
+        (actual parameters)
+        (
+        #4
+        Actual
+          (expr)
+          #4
+          Const_string
+            (name)
+            %lld, %lld
+            (type)
+          : String
+          (type)
+        : String
+        #4
+        Actual
+          (expr)
+          #4
+          Object
+            (name)
+            x
+            (type)
+          : Int
+          (type)
+        : Int
+        #4
+        Actual
+          (expr)
+          #4
+          Call
+            (name)
+            test
+            (actual parameters)
+            (
+            )
+            (type)
+          : Int
+          (type)
+        : Int
+        )
+        (type)
+      : Void
+      #5
+      IfStmt
+        (condition)
+        #5
+        Object
+          (name)
+          y
+          (type)
+        : Bool
+        (then)
+        #5
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          #6
+          ReturnStmt
+            (return value)
+            #6
+            No_expr
+          )
+        (else)
+        #5
+        Statement Block
+          (variable declarations)
+          (
+          )
+          (statements)
+          (
+          )
+      #8
+      ReturnStmt
+        (return value)
+        #8
+        No_expr
+      )
+  #11
+  Call Declaration
+    (name)
+    test
+    (parameters)
+    (
+    )
+    (return type)
+    Int
+    (body)
+    #11
+    Statement Block
+      (variable declarations)
+      (
+      )
+      (statements)
+      (
+      #12
+      ReturnStmt
+        (return value)
+        #12
+        +
+          (OP left)
+          #12
+          Const_int
+            (name)
+            1
+            (type)
+          : Int
+          (OP right)
+          #12
+          Const_int
+            (name)
+            5
+            (type)
+          : Int
+          (type)
+        : Int
+      )
+  #15
+  Variable Declaration
+    #15
+    Variable
+      (name)
+      y
+      (type)
+      Bool

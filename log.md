@@ -87,7 +87,7 @@ bash judge.sh
 - [x] 3.10 函数内新声明同名的变量，可以重复命名，新加一层变量作用域
 - [x] 变量作用域
 - [ ] 需要看一下，没有报错的例子中，type是否正确,写一些正确的程序，对比语法树，看一看语法树
-- [ ] one uncertain case
+- [x] one uncertain case
   
 
 ### check list
