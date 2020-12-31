@@ -19,11 +19,11 @@
 #define LOG_WORD_SIZE 2     // for logical shifts
 
 // Global names
-#define GLOBAL                  "\t.globl\t"
+#define GLOBAL                  ".globl\t"
 
 
 // Symbol type
-#define SYMBOL_TYPE             "\t.type\t"
+#define SYMBOL_TYPE             ".type\t"
 #define INTTAG                  "\t.quad\t"
 #define STRINGTAG               "\t.string\t"
 #define FLOATTAG                "\t.long\t"

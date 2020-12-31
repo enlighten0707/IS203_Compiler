@@ -1,0 +1,53 @@
+add:
+.LFB2:
+    pushq    %rbp
+.LCFI0:
+    movq    %rsp, %rbp
+.LCFI1:
+    movl    %rdi, -20(%rbp)
+    movl    %rsi, -24(%rbp)
+    movl    %rdx, -28(%rbp)
+    movl    %rcx, -32(%rbp)
+    movl    %r8d, -36(%rbp)
+    movl    %r9d, -40(%rbp)
+    movl    -24(%rbp), %rax
+    addl    -20(%rbp), %eax
+    addl    -28(%rbp), %eax
+    addl    -32(%rbp), %eax
+    addl    -36(%rbp), %eax
+    addl    -40(%rbp), %eax
+    addl    16(%rbp), %eax
+    addl    24(%rbp), %eax
+    movl    %eax, -4(%rbp)
+    movl    -4(%rbp), %eax
+    leave
+    ret
+
+main:
+.LFB3:
+    pushq    %rbp
+.LCFI2:
+    movq    %rsp, %rbp
+.LCFI3:
+    subq    $48, %rsp
+.LCFI4:
+    movl    $10, -20(%rbp)
+    movl    $20, -16(%rbp)
+    movl    -16(%rbp), %eax
+    addl    -20(%rbp), %eax
+    movl    %rax, -12(%rbp)
+    movl    $88, 8(%rsp)
+    movl    $77, (%rsp)
+    movl    $66, %r9
+    movl    $55, %r8
+    movl    $44, %rcx
+    movl    $33, %rdx
+    movl    $22, %rsi
+    movl    $11, %rdi
+    call    add
+    movl    %rax, -8(%rbp)
+    movl    -12(%rbp), %eax
+    movl    %eax, -4(%rbp)
+    movl    $0, %eax
+    leave
+    ret

@@ -67,6 +67,9 @@ static void initialize_constants(void)
     print        = idtable.add_string("printf");
 }
 
+static bool sameType(Symbol name1, Symbol name2) {
+    return strcmp(name1->get_string(), name2->get_string()) == 0;
+}
 
 //*********************************************************
 //
@@ -371,7 +374,8 @@ void StringEntry::code_ref(ostream& s)
 void StringEntry::code_def(ostream& s)
 {
   s << STRINGCONST_PREFIX << index << ":" << endl;
-  s  << STRINGTAG ; emit_string_constant(s,str);                                                // align to word
+  s  << STRINGTAG ; emit_string_constant(s,str);   
+  s << TEXT <<endl; 
 }
 
 //
@@ -386,15 +390,15 @@ void StrTable::code_string_table(ostream& s)
 }
 
 // the following 2 functions are useless, please DO NOT care about them
-void FloatEntry::code_ref(ostream &s)
-{
-  s << FLOATTAG << index;
-}
+// void FloatEntry::code_ref(ostream &s)
+// {
+//   s << FLOATTAG << index;
+// }
 
-void IntEntry::code_def(ostream &s)
-{
-  s << GLOBAL;
-}
+// void IntEntry::code_def(ostream &s)
+// {
+//   s << GLOBAL;
+// }
 
 //***************************************************
 //
@@ -430,13 +434,21 @@ static void emit_global_bool(Symbol name, ostream& s) {
   BOOLTAG << 0 << endl;
 }
 
-void code_global_data(Decls decls, ostream &str)
-{
-
+void code_global_data(Decls decls, ostream &str){
+  // for(int i=decls->first(); decls->more(i); i=decls->next(i)) {
+  //   if(!decls->nth(i)->isCallDecl()) {
+  //       decls->nth(i)->code(str);
+  //   }       
+  // }
 }
 
 void code_calls(Decls decls, ostream &str) {
-
+  
+  for(int i=decls->first(); decls->more(i); i=decls->next(i)) {
+    if(decls->nth(i)->isCallDecl()) {
+        decls->nth(i)->code(str);
+    }       
+  }
 }
 
 //***************************************************
@@ -457,7 +469,7 @@ void code_calls(Decls decls, ostream &str) {
 
 void cgen_helper(Decls decls, ostream& s)
 {
-
+  stringtable.code_string_table(s);
   code(decls, s);
 }
 
@@ -482,11 +494,23 @@ void code(Decls decls, ostream& s)
 //*****************************************************************
 
 void CallDecl_class::code(ostream &s) {
-
+  s<<GLOBAL<<getName()->get_string()<<endl;
+  s<<SYMBOL_TYPE<<getName()->get_string()<<COMMA<<FUNCTION<<endl;
+  emit_position(getName()->get_string(),s);
+  emit_push(RBP, s);
+  emit_mov(RSP,RBP,s);
+  emit_sub("$8",RSP,s);
+  getBody()->code(s); //StmtBlock
+  emit_leave(s);
+  emit_ret(s);
 }
 
 void StmtBlock_class::code(ostream &s){
- 
+//  vars, stmts
+  for(int i=vars->first(); vars->more(i); i=vars->next(i))
+    vars->nth(i)->code(s);
+  for(int i=stmts->first(); stmts->more(i); i=stmts->next(i))
+    stmts->nth(i)->code(s);
 }
 
 void IfStmt_class::code(ostream &s) {
@@ -528,10 +552,24 @@ void Call_class::code(ostream &s) {
   }
   */
   //
+  if (sameType(getName(),print)){
+    //string, code-ref
+    getActuals()->nth(0)->code(s); 
+
+    //  把%eax赋值为Float类型的参数个数, num, TODO
+
+    // movq	%rax, %rdi
+    emit_mov(RAX,RDI,s);
+    //call printf
+    emit_sub("$8", RSP, s);
+    emit_irmovl("0", EAX, s);
+    emit_call("printf", s);
+  }
 }
 
 void Actual_class::code(ostream &s) {
-  
+  printf("Actual_class code.");
+  expr->code(s);
 }
 
 void Assign_class::code(ostream &s) {
@@ -619,7 +657,10 @@ void Const_int_class::code(ostream &s) {
 }
 
 void Const_string_class::code(ostream &s) {
- 
+  printf("Const String code.");
+  s<<MOV;
+  stringtable.lookup_string(value->get_string())->code_ref(s);
+  s<<COMMA<<RAX<<endl;
 }
 
 void Const_float_class::code(ostream &s) {
@@ -635,5 +676,5 @@ void Object_class::code(ostream &s) {
 }
 
 void No_expr_class::code(ostream &s) {
-
+  
 }

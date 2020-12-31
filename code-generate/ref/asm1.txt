@@ -1,0 +1,47 @@
+.globl func
+func:
+    ##################### preamble of function sets up stack
+
+    pushq %rbp          # save the base pointer
+    movq  %rsp, %rbp    # set new base pointer to esp
+
+    pushq %rdi          # save first argument (a) on the stack
+    pushq %rsi          # save second argument (b) on the stack
+    pushq %rdx          # save third argument (c) on the stack
+
+    subq  $16, %rsp     # allocate two more local variables
+
+    pushq %rbx          # save callee-saved registers
+    pushq %r12
+    pushq %r13
+    pushq %r14
+    pushq %r15
+
+    ######################## body of function starts here
+
+    movq  -8(%rbp),  %rbx   # load each arg into a scratch register
+    movq  -16(%rbp), %rcx
+    movq  -24(%rbp), %rdx
+
+    addq  %rdx, %rcx       # add the args together
+    addq  %rcx, %rbx
+    movq  %rbx, -32(%rbp)   # store the result into local 0 (x)
+
+    movq  -32(%rbp), %rbx   # load local 0 (x) into a scratch register.
+    imulq  $5, %rbx        # multiply it by 5
+    movl  %rbx, -40(%rbp)   # store the result in local 1 (y)
+
+    movl  -20(%ebp), %rax   # move local 1 (y) into the result register
+
+    #################### epilogue of function restores the stack
+
+    popq %r15          # restore callee-saved registers
+    popq %r14
+    popq %r13
+    popq %r12
+    popq %rbx
+
+    movq %rbp, %rsp    # reset stack to base pointer.
+    popq %rbp          # restore the old base pointer
+
+    ret                # return to caller
