@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
   curr_lineno = 1;
   handle_flags(argc,argv);
   firstfile_index = optind;
-
   if (!out_filename && optind < argc) {   // no -o option
       char *dot = strrchr(argv[optind], '.');
       if (dot) *dot = '\0'; // strip off file extension
@@ -42,6 +41,7 @@ int main(int argc, char *argv[]) {
   // Don't touch the output file until we know that earlier phases of the
   // compiler have succeeded.
   //
+
   seal_yyparse();
   if(omerrs != 0 || ast_root == NULL){
     cerr << "syntax analyze failed. Please make sure syntax parser passed." << endl;

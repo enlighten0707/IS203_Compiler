@@ -69,6 +69,16 @@ public:
 //
 //    `dump()' prints the symbols in the symbol table.
 //
+struct AddAndType {
+    char* add;
+    bool isFloat;
+    bool inRegister;
+};
+
+struct Help {
+    int flag;
+    int stmtNum;
+};
 
 template <class SYM, class DAT>
 class SymbolTable

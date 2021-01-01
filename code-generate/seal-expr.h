@@ -25,6 +25,9 @@ public:
    }
    void check(Symbol s) {checkType();}
    void dump_type(ostream&, int);
+   bool isFloat() {
+      return type->isFloat();
+   }
    
    virtual void dump_with_types(ostream&,int) = 0; 
 	virtual void dump(ostream&,int) = 0;
@@ -104,6 +107,15 @@ public:
    void dump_with_types(ostream&,int); 
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
+   bool isFloat() {
+      return isLeftFloat()||isRightFloat();
+   }
+   bool isLeftFloat() {
+      return e1->isFloat();
+   }
+   bool isRightFloat() {
+      return e2->isFloat();
+   }
    void code(ostream&);
 };
 
@@ -123,6 +135,15 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return isLeftFloat()||isRightFloat();
+   }
+   bool isLeftFloat() {
+      return e1->isFloat();
+   }
+   bool isRightFloat() {
+      return e2->isFloat();
+   }
 };
 
 // define constructor - multi
@@ -141,6 +162,15 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return isLeftFloat()||isRightFloat();
+   }
+   bool isLeftFloat() {
+      return e1->isFloat();
+   }
+   bool isRightFloat() {
+      return e2->isFloat();
+   }
 };
 
 // define constructor - divide
@@ -159,6 +189,15 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return isLeftFloat()||isRightFloat();
+   }
+   bool isLeftFloat() {
+      return e1->isFloat();
+   }
+   bool isRightFloat() {
+      return e2->isFloat();
+   }
 };
 
 // define constructor - mod
@@ -437,6 +476,9 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return false;
+   }
 };
 
 // define constructconst_string - const_string
@@ -453,6 +495,9 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return false;
+   }
 };
 
 // define constructconst_float - const_float
@@ -463,12 +508,16 @@ public:
    Const_float_class(Symbol a1) {
       value = a1;
    }
+   char* getString() {return value->get_string();}
    Expr copy_Expr();
    void dump(ostream& stream, int n);
    void dump_with_types(ostream&,int); 
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return true;
+   }
 };
 
 // define constructconst_bool - const_bool
@@ -485,6 +534,9 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool isFloat() {
+      return false;
+   }
 };
 
 class Object_class : public Expr_class {
@@ -501,6 +553,12 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
+   bool inReg() {
+      return map->lookup(var)->inRegister;
+   }
+   bool isFloat() {
+      return map->lookup(var)->isFloat;
+   }
 };
 
 // define constructor - no_expr

@@ -4,7 +4,7 @@
 
 #include "tree.h"
 #include "seal-tree.handcode.h"
-
+#include "symtab.h"
 
 
 class Decl_class : public tree_node {
@@ -33,6 +33,14 @@ public:
    tree_node *copy()		 { return copy_Variable(); }
    Symbol getName() { return name; }
    Symbol getType() { return type; }
+   
+   char* getString() {
+      return name->get_string();
+   }
+
+   bool isFloat() {
+      return type->isFloat();
+   }
 
    Variable copy_Variable();
    void dump(ostream& stream, int n);
@@ -49,12 +57,14 @@ public:
    Symbol getName() { return variable->getName(); }
    Symbol getType() { return variable->getType(); }
 
+   char* getString() {return variable->getString(); }
+
    Decl copy_Decl();
    void dump(ostream& stream, int n);
    void dump_with_types(ostream&,int);
    bool isCallDecl(){return false;}
    void check();
-   void code(ostream&){}
+   void code(ostream&);
 };
 
 class CallDecl_class : public Decl_class {

@@ -1,144 +1,222 @@
 # start of generated code
-	.section		.rodata	
-.LC0:
-	.string	"tan = %f\n"
 	.text	
-	.globl	tan
-	.type	tan, @function
 tan:
+	.global	tan
+	.type	tan, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
 	pushq	 %rbx
-	pushq	 %r10
-	pushq	 %r11
 	pushq	 %r12
 	pushq	 %r13
 	pushq	 %r14
 	pushq	 %r15
-	subq	$8, %rsp
-	movq	%xmm0, -64(%rbp)
-	subq	$8, %rsp
-	movq	%xmm1, -72(%rbp)
-	subq	$8, %rsp
-	movq	%xmm2, -80(%rbp)
-	subq	$8, %rsp
-	movq	%xmm3, -88(%rbp)
-	subq	$8, %rsp
-	movq	-64(%rbp), %xmm1
-	movq	-80(%rbp), %xmm0
-	ucomisd	%xmm0, %xmm1
-	je	 .POS2
-	movq	$0, %rax
-	jmp	 .POS3
-.POS2:
-	movq	$1, %rax
-.POS3:
-	movq	%rax, -96(%rbp)
-	movq	-96(%rbp), %rax
-	testq	%rax, %rax
-	jz	 .POS0
-	subq	$8, %rsp
-	movq	$0x0, %rax
-	movq	%rax, -104(%rbp)
-	movaps	-104(%rbp), %xmm0
+	xorq	%r15, %r15
+	pushq	 %r15
+	movsd	%xmm0, -8(%rsp)
+	movq	-8(%rsp), %xmm8
+	movq	%xmm8, %r12
+	pushq	 %r12
+	movsd	%xmm2, -8(%rsp)
+	movq	-8(%rsp), %xmm8
+	popq	 %r13
+	xorpd	%xmm9, %xmm9
+	movq	%r13, %xmm9
+	subsd	%xmm9, %xmm8
+	movq	%xmm8, %r12
+	pushq	 %r12
+	movsd	%xmm1, -8(%rsp)
+	movq	-8(%rsp), %xmm8
+	movq	%xmm8, %r12
+	pushq	 %r12
+	movsd	%xmm3, -8(%rsp)
+	movq	-8(%rsp), %xmm8
+	popq	 %r13
+	xorpd	%xmm9, %xmm9
+	movq	%r13, %xmm9
+	subsd	%xmm9, %xmm8
+	popq	 %r13
+	xorpd	%xmm9, %xmm9
+	movq	%r13, %xmm9
+	divsd	%xmm9, %xmm8
+	xorpd	%xmm0, %xmm0
+	movq	%rax, %xmm0
+	popq	 %r15
+	addq	%r15, %rsp
 	popq	 %r15
 	popq	 %r14
 	popq	 %r13
 	popq	 %r12
-	popq	 %r11
-	popq	 %r10
 	popq	 %rbx
-	leave	
+	popq	 %rbp
 	ret	
-	jmp	 .POS1
-.POS0:
-.POS1:
-	subq	$8, %rsp
-	movsd	-88(%rbp), %xmm4
-	movsd	-72(%rbp), %xmm5
-	subsd	%xmm5, %xmm4
-	movsd	%xmm4, -112(%rbp)
-	subq	$8, %rsp
-	movsd	-80(%rbp), %xmm4
-	movsd	-64(%rbp), %xmm5
-	subsd	%xmm5, %xmm4
-	movsd	%xmm4, -120(%rbp)
-	subq	$8, %rsp
-	movsd	-112(%rbp), %xmm4
-	movsd	-120(%rbp), %xmm5
-	divsd	%xmm5, %xmm4
-	movsd	%xmm4, -128(%rbp)
-	movaps	-128(%rbp), %xmm0
 	popq	 %r15
-	popq	 %r14
-	popq	 %r13
-	popq	 %r12
-	popq	 %r11
-	popq	 %r10
-	popq	 %rbx
-	leave	
-	ret	
+	addq	%r15, %rsp
 	.size	tan, .-tan
-	.globl	main
-	.type	main, @function
 main:
+	.global	main
+	.type	main, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
 	pushq	 %rbx
-	pushq	 %r10
-	pushq	 %r11
 	pushq	 %r12
 	pushq	 %r13
 	pushq	 %r14
 	pushq	 %r15
+	xorq	%r15, %r15
 	subq	$8, %rsp
+	addq	$8, %r15
 	subq	$8, %rsp
+	addq	$8, %r15
 	subq	$8, %rsp
+	addq	$8, %r15
 	subq	$8, %rsp
-	subq	$8, %rsp
+	addq	$8, %r15
+	pushq	 %r15
 	movq	$0x400c000000000000, %rax
-	movq	%rax, -40(%rbp)
-	movq	-40(%rbp), %rax
-	movq	%rax, -8(%rbp)
-	subq	$8, %rsp
+	xorpd	%xmm8, %xmm8
+	movq	%rax, %xmm8
+	movsd	%xmm8, -48(%rbp)
 	movq	$0x400c000000000000, %rax
-	movq	%rax, -48(%rbp)
-	movq	-48(%rbp), %rax
-	movq	%rax, -24(%rbp)
-	subq	$8, %rsp
+	xorpd	%xmm8, %xmm8
+	movq	%rax, %xmm8
+	movsd	%xmm8, -64(%rbp)
 	movq	$0x4016000000000000, %rax
-	movq	%rax, -56(%rbp)
-	movq	-56(%rbp), %rax
-	movq	%rax, -16(%rbp)
-	subq	$8, %rsp
+	xorpd	%xmm8, %xmm8
+	movq	%rax, %xmm8
+	movsd	%xmm8, -56(%rbp)
 	movq	$0x4012000000000000, %rax
-	movq	%rax, -64(%rbp)
-	movq	-64(%rbp), %rax
-	movq	%rax, -32(%rbp)
+	xorpd	%xmm8, %xmm8
+	movq	%rax, %xmm8
+	movsd	%xmm8, -72(%rbp)
+	pushq	 %rdi
+	pushq	 %rsi
+	pushq	 %rdx
+	pushq	 %rcx
+	pushq	 %r8
+	pushq	 %r9
 	subq	$8, %rsp
+	movsd	%xmm0, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm1, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm2, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
 	movq	$.LC0, %rax
-	movq	%rax, -72(%rbp)
-	movsd	-8(%rbp), %xmm0
-	movsd	-24(%rbp), %xmm1
-	movsd	-16(%rbp), %xmm2
-	movsd	-32(%rbp), %xmm3
+	movq	%rax, %rdi
+	pushq	 %rdi
+	pushq	 %rsi
+	pushq	 %rdx
+	pushq	 %rcx
+	pushq	 %r8
+	pushq	 %r9
+	subq	$8, %rsp
+	movsd	%xmm0, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm1, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm2, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
+	movq	-48(%rbp), %r12
+	movq	%r12, -8(%rsp)
+	xorpd	%xmm8, %xmm8
+	movq	-8(%rsp), %xmm8
+	movq	%xmm8, %xmm0
+	movq	-64(%rbp), %r12
+	movq	%r12, -8(%rsp)
+	xorpd	%xmm8, %xmm8
+	movq	-8(%rsp), %xmm8
+	movq	%xmm8, %xmm1
+	movq	-56(%rbp), %r12
+	movq	%r12, -8(%rsp)
+	xorpd	%xmm8, %xmm8
+	movq	-8(%rsp), %xmm8
+	movq	%xmm8, %xmm2
+	movq	-72(%rbp), %r12
+	movq	%r12, -8(%rsp)
+	xorpd	%xmm8, %xmm8
+	movq	-8(%rsp), %xmm8
+	movq	%xmm8, %xmm3
 	call	 tan
-	subq	$8, %rsp
-	movsd	%xmm0, -80(%rbp)
-	movq	-72(%rbp), %rdi
-	movsd	-80(%rbp), %xmm0
-	subq	$8, %rsp
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm3
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm2
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm1
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm0
+	addq	$8, %rsp
+	popq	 %r9
+	popq	 %r8
+	popq	 %rcx
+	popq	 %rdx
+	popq	 %rsi
+	popq	 %rdi
+	movq	%xmm8, %xmm0
 	movl	$1, %eax
 	call	 printf
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm3
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm2
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm1
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm0
+	addq	$8, %rsp
+	popq	 %r9
+	popq	 %r8
+	popq	 %rcx
+	popq	 %rdx
+	popq	 %rsi
+	popq	 %rdi
+	movq	$1, %rax
+	popq	 %r15
+	addq	%r15, %rsp
 	popq	 %r15
 	popq	 %r14
 	popq	 %r13
 	popq	 %r12
-	popq	 %r11
-	popq	 %r10
 	popq	 %rbx
-	leave	
+	popq	 %rbp
 	ret	
+	popq	 %r15
+	addq	%r15, %rsp
 	.size	main, .-main
+	.section	.rodata
+.LC0:
+	.string	"tan = %f\n"
 
 # end of generated code

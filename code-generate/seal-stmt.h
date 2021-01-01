@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "seal-tree.handcode.h"
 #include "seal-decl.h"
+#include "symtab.h"
 
 class Program_class : public tree_node {
 protected:

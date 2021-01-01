@@ -4,9 +4,6 @@
 */
 
 func tan(x1 Float, y1 Float, x2 Float, y2 Float) Float {
-    if x1 == x2 {
-        return 0.0;
-    } 
 
     return (y2 - y1) / (x2 - x1);
 }

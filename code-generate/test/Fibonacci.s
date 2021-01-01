@@ -1,166 +1,320 @@
 # start of generated code
-	.section		.rodata	
-.LC0:
-	.string	"fib(%lld) = %lld \n"
 	.text	
-	.globl	fib
-	.type	fib, @function
 fib:
+	.global	fib
+	.type	fib, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
 	pushq	 %rbx
-	pushq	 %r10
-	pushq	 %r11
 	pushq	 %r12
 	pushq	 %r13
 	pushq	 %r14
 	pushq	 %r15
-	subq	$8, %rsp
-	movq	%rdi, -64(%rbp)
-	subq	$8, %rsp
+	xorq	%r15, %r15
+	pushq	 %r15
 	movq	$2, %rax
-	movq	%rax, -72(%rbp)
-	subq	$8, %rsp
-	movq	-64(%rbp), %rax
-	movq	-72(%rbp), %rdx
-	cmpq	%rdx, %rax
-	jle	 .POS2
-	movq	$0, %rax
-	jmp	 .POS3
-.POS2:
-	movq	$1, %rax
-.POS3:
-	movq	%rax, -80(%rbp)
-	movq	-80(%rbp), %rax
+	pushq	 %rax
+	movq	%rdi, %rax
+	popq	 %rbx
+	xorq	%r13, %r13
+	cmpq	%rax, %rbx
+	setge	%r13b
+	movq	%r13, %rax
 	testq	%rax, %rax
-	jz	 .POS0
-	subq	$8, %rsp
+	je	 .POS0
+	xorq	%r15, %r15
+	pushq	 %r15
 	movq	$1, %rax
-	movq	%rax, -88(%rbp)
-	movq	-88(%rbp), %rax
+	popq	 %r15
+	addq	%r15, %rsp
+	popq	 %r15
+	addq	%r15, %rsp
 	popq	 %r15
 	popq	 %r14
 	popq	 %r13
 	popq	 %r12
-	popq	 %r11
-	popq	 %r10
 	popq	 %rbx
-	leave	
+	popq	 %rbp
 	ret	
+	popq	 %r15
+	addq	%r15, %rsp
 	jmp	 .POS1
 .POS0:
+	xorq	%r15, %r15
+	pushq	 %r15
+	popq	 %r15
+	addq	%r15, %rsp
 .POS1:
+	pushq	 %rdi
+	pushq	 %rsi
+	pushq	 %rdx
+	pushq	 %rcx
+	pushq	 %r8
+	pushq	 %r9
 	subq	$8, %rsp
-	movq	$1, %rax
-	movq	%rax, -96(%rbp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movq	-64(%rbp), %rbx
-	movq	-96(%rbp), %r10
-	subq	%r10, %rbx
-	movq	%rbx, -104(%rbp)
-	movq	-104(%rbp), %rdi
-	call	 fib
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movq	%rax, -112(%rbp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
+	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
 	movq	$2, %rax
-	movq	%rax, -120(%rbp)
-	subq	$8, %rsp
-	movq	-64(%rbp), %rbx
-	movq	-120(%rbp), %r10
-	subq	%r10, %rbx
-	movq	%rbx, -128(%rbp)
-	movq	-128(%rbp), %rdi
+	pushq	 %rax
+	movq	%rdi, %rax
+	popq	 %rbx
+	subq	%rbx, %rax
+	movq	%rax, %rdi
 	call	 fib
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm3
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm2
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm1
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm0
+	addq	$8, %rsp
+	popq	 %r9
+	popq	 %r8
+	popq	 %rcx
+	popq	 %rdx
+	popq	 %rsi
+	popq	 %rdi
+	pushq	 %rax
+	pushq	 %rdi
+	pushq	 %rsi
+	pushq	 %rdx
+	pushq	 %rcx
+	pushq	 %r8
+	pushq	 %r9
 	subq	$8, %rsp
-	movq	%rax, -136(%rbp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movq	-112(%rbp), %rbx
-	movq	-136(%rbp), %r10
-	addq	%rbx, %r10
-	movq	%r10, -144(%rbp)
-	movq	-144(%rbp), %rax
+	movsd	%xmm1, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm2, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
+	movq	$1, %rax
+	pushq	 %rax
+	movq	%rdi, %rax
+	popq	 %rbx
+	subq	%rbx, %rax
+	movq	%rax, %rdi
+	call	 fib
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm3
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm2
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm1
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm0
+	addq	$8, %rsp
+	popq	 %r9
+	popq	 %r8
+	popq	 %rcx
+	popq	 %rdx
+	popq	 %rsi
+	popq	 %rdi
+	popq	 %rbx
+	addq	%rbx, %rax
+	popq	 %r15
+	addq	%r15, %rsp
 	popq	 %r15
 	popq	 %r14
 	popq	 %r13
 	popq	 %r12
-	popq	 %r11
-	popq	 %r10
 	popq	 %rbx
-	leave	
+	popq	 %rbp
 	ret	
+	popq	 %r15
+	addq	%r15, %rsp
 	.size	fib, .-fib
-	.globl	main
-	.type	main, @function
 main:
+	.global	main
+	.type	main, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
 	pushq	 %rbx
-	pushq	 %r10
-	pushq	 %r11
 	pushq	 %r12
 	pushq	 %r13
 	pushq	 %r14
 	pushq	 %r15
+	xorq	%r15, %r15
 	subq	$8, %rsp
-	subq	$8, %rsp
+	addq	$8, %r15
+	pushq	 %r15
 	movq	$1, %rax
-	movq	%rax, -16(%rbp)
-	movq	-16(%rbp), %rax
-	movq	%rax, -8(%rbp)
-.POS4:
-	subq	$8, %rsp
-	movq	$15, %rax
-	movq	%rax, -24(%rbp)
-	subq	$8, %rsp
-	movq	-8(%rbp), %rax
-	movq	-24(%rbp), %rdx
-	cmpq	%rdx, %rax
-	jl	 .POS7
-	movq	$0, %rax
-	jmp	 .POS8
-.POS7:
-	movq	$1, %rax
-.POS8:
-	movq	%rax, -32(%rbp)
-	movq	-32(%rbp), %rax
-	testq	%rax, %rax
-	jz	 .POS6
-	subq	$8, %rsp
-	movq	$.LC0, %rax
-	movq	%rax, -40(%rbp)
-	movq	-8(%rbp), %rdi
-	call	 fib
-	subq	$8, %rsp
 	movq	%rax, -48(%rbp)
-	movq	-40(%rbp), %rdi
-	movq	-8(%rbp), %rsi
-	movq	-48(%rbp), %rdx
+.POS2:
+	movq	$15, %rax
+	pushq	 %rax
+	movq	-48(%rbp), %rax
+	popq	 %rbx
+	xorq	%r13, %r13
+	cmpq	%rax, %rbx
+	setg	%r13b
+	movq	%r13, %rax
+	testq	%rax, %rax
+	je	 .POS3
+	xorq	%r15, %r15
+	pushq	 %r15
+	pushq	 %rdi
+	pushq	 %rsi
+	pushq	 %rdx
+	pushq	 %rcx
+	pushq	 %r8
+	pushq	 %r9
 	subq	$8, %rsp
+	movsd	%xmm0, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm1, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm2, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
+	movq	$.LC0, %rax
+	movq	%rax, %rdi
+	movq	-48(%rbp), %rax
+	movq	%rax, %rsi
+	pushq	 %rdi
+	pushq	 %rsi
+	pushq	 %rdx
+	pushq	 %rcx
+	pushq	 %r8
+	pushq	 %r9
+	subq	$8, %rsp
+	movsd	%xmm0, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm1, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm2, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
+	movq	-48(%rbp), %rax
+	movq	%rax, %rdi
+	call	 fib
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm3
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm2
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm1
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm0
+	addq	$8, %rsp
+	popq	 %r9
+	popq	 %r8
+	popq	 %rcx
+	popq	 %rdx
+	popq	 %rsi
+	popq	 %rdi
+	movq	%rax, %rdx
 	movl	$0, %eax
 	call	 printf
-.POS5:
-	subq	$8, %rsp
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm3
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm2
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm1
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm0
+	addq	$8, %rsp
+	popq	 %r9
+	popq	 %r8
+	popq	 %rcx
+	popq	 %rdx
+	popq	 %rsi
+	popq	 %rdi
+	popq	 %r15
+	addq	%r15, %rsp
+.POS4:
 	movq	$1, %rax
-	movq	%rax, -64(%rbp)
-	subq	$8, %rsp
-	movq	-8(%rbp), %rbx
-	movq	-64(%rbp), %r10
-	addq	%rbx, %r10
-	movq	%r10, -72(%rbp)
-	movq	-72(%rbp), %rax
-	movq	%rax, -8(%rbp)
-	jmp	 .POS4
-.POS6:
+	pushq	 %rax
+	movq	-48(%rbp), %rax
+	popq	 %rbx
+	addq	%rbx, %rax
+	movq	%rax, -48(%rbp)
+	jmp	 .POS2
+.POS3:
+	movq	$1, %rax
+	popq	 %r15
+	addq	%r15, %rsp
 	popq	 %r15
 	popq	 %r14
 	popq	 %r13
 	popq	 %r12
-	popq	 %r11
-	popq	 %r10
 	popq	 %rbx
-	leave	
+	popq	 %rbp
 	ret	
+	popq	 %r15
+	addq	%r15, %rsp
 	.size	main, .-main
+	.section	.rodata
+.LC0:
+	.string	"fib(%lld) = %lld \n"
 
 # end of generated code

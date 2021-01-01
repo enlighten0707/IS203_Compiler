@@ -3,6 +3,7 @@
 // and disclaimer of warranty provisions.
 //
 #include "copyright.h"
+#include "symtab.h"
 
 #ifndef TREE_H
 #define TREE_H
@@ -59,7 +60,18 @@ public:
     virtual void dump(ostream& stream, int n) = 0;
     int get_line_number();
     tree_node *set(tree_node *);
+    static SymbolTable<Symbol ,AddAndType> *map;
+    static SymbolTable<int ,char> *strMap;
+    static int rspAdd;
+    static int StringNum;
+    static int jumpNum;
+    static bool flag;
+    static int varNum;
+    static int stmtIndex;
+    static SymbolTable<int, Help> *breakPoint;
+    static SymbolTable<int, Help> *continuePoint;
 };
+
 
 ///////////////////////////////////////////////////////////////////
 //

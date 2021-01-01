@@ -19,11 +19,11 @@
 #define LOG_WORD_SIZE 2     // for logical shifts
 
 // Global names
-#define GLOBAL                  ".globl\t"
+#define GLOBAL                  "\t.globl\t"
 
 
 // Symbol type
-#define SYMBOL_TYPE             ".type\t"
+#define SYMBOL_TYPE             "\t.type\t"
 #define INTTAG                  "\t.quad\t"
 #define STRINGTAG               "\t.string\t"
 #define FLOATTAG                "\t.long\t"
@@ -83,6 +83,7 @@
 #define CALL    "\tcall\t"
 #define RET     "\tret\t"
 #define LEAVE   "\tleave\t"
+#define DOTTEXT "\t.text\t"
 #define POP     "\tpopq\t"
 #define PUSH    "\tpushq\t"
 

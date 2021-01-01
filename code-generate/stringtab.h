@@ -40,11 +40,19 @@ public:
   // is the integer argument equal to the index of this Entry?
   bool equal_index(int ind) const           { return ind == index; }
 
+  char* getString() {return str;}
+
   ostream& print(ostream& s) const;
 
   // Return the str and len components of the Entry.
   char *get_string() const;
   int get_len() const;
+
+  bool isFloat() {
+    if(str[0]=='F')
+    return true;
+    return false;
+  }
 };
 
 //
