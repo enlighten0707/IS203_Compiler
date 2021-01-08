@@ -23,7 +23,7 @@ fib:
 	setge	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	 .POS0
+	je	    .POS0
 	xorq	%r15, %r15
 	pushq	 %r15
 	movq	$1, %rax
@@ -44,6 +44,8 @@ fib:
 .POS0:
 	xorq	%r15, %r15
 	pushq	 %r15
+	movq	$1, %rax
+	movq	%rax, -48(%rbp)
 	popq	 %r15
 	addq	%r15, %rsp
 .POS1:
@@ -61,6 +63,14 @@ fib:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
 	movq	$2, %rax
 	pushq	 %rax
 	movq	%rdi, %rax
@@ -68,6 +78,14 @@ fib:
 	subq	%rbx, %rax
 	movq	%rax, %rdi
 	call	 fib
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2
@@ -97,6 +115,14 @@ fib:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
 	movq	$1, %rax
 	pushq	 %rax
 	movq	%rdi, %rax
@@ -104,6 +130,14 @@ fib:
 	subq	%rbx, %rax
 	movq	%rax, %rdi
 	call	 fib
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2
@@ -177,6 +211,14 @@ main:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
 	movq	$.LC0, %rax
 	movq	%rax, %rdi
 	movq	-48(%rbp), %rax
@@ -195,9 +237,25 @@ main:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm4, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm5, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm6, (%rsp)
+	subq	$8, %rsp
+	movsd	%xmm7, (%rsp)
 	movq	-48(%rbp), %rax
 	movq	%rax, %rdi
 	call	 fib
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2
@@ -215,6 +273,14 @@ main:
 	movq	%rax, %rdx
 	movl	$0, %eax
 	call	 printf
+	movsd	(%rsp), %xmm7
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm6
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm5
+	addq	$8, %rsp
+	movsd	(%rsp), %xmm4
+	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2

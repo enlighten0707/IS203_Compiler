@@ -9,6 +9,9 @@ func fib(x Int) Int {
     if x <= 2 {
         return 1;
     } 
+    else{
+        y=1;
+    }
 
     return fib(x-1) + fib(x-2);
 }

@@ -31,8 +31,8 @@ tree_node::tree_node()
 }
 
 SymbolTable<Symbol ,AddAndType>* tree_node::map = new SymbolTable<Symbol ,AddAndType>();
-SymbolTable<int,char>* tree_node::strMap = new SymbolTable<int,char>();
-int tree_node::StringNum = 0;
+// SymbolTable<int,char>* tree_node::strMap = new SymbolTable<int,char>();
+// int tree_node::StringNum = 0;
 int tree_node::rspAdd = 0;
 int tree_node::jumpNum = 0;
 int tree_node::varNum = 0;

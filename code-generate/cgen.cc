@@ -460,16 +460,16 @@ static void emit_global_bool(Symbol name, ostream& s) {
   BOOLTAG << 0 << endl;
 }
 
-void code_global_data(Decls decls, ostream &str)
-{
-  // decls->dump(str, 0);
-}
+// void code_global_data(Decls decls, ostream &str)
+// {
+//   // decls->dump(str, 0);
+// }
 
-void code_calls(Decls decls, ostream &str) {
-  // for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
-  //   decls->nth(i)->code(str);
-  // }
-}
+// void code_calls(Decls decls, ostream &str) {
+//   // for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
+//   //   decls->nth(i)->code(str);
+//   // }
+// }
 
 //***************************************************
 //
@@ -661,9 +661,7 @@ void CallDecl_class::code(ostream &s) {
 }
 
 void StmtBlock_class::code(ostream &s) {
-
-  if (cgen_debug)
-    s << "-----StmtBlock-----" <<endl;
+  if (cgen_debug) s << "-----StmtBlock-----" <<endl;
 
   if(breakPoint->lookup(1)!=NULL) {
     breakPoint->lookup(1)->stmtNum++;
@@ -700,14 +698,11 @@ void StmtBlock_class::code(ostream &s) {
   }
   map->exitscope();
 
-  if (cgen_debug)
-    s << "-----/StmtBlock-----" <<endl;
-
+  if (cgen_debug) s << "-----/StmtBlock-----" <<endl;
 }
 
 void VariableDecl_class::code(ostream &s) {
-  if (cgen_debug)
-    s << "-----VariableDecl-----" <<endl;
+  if (cgen_debug) s << "-----VariableDecl-----" <<endl;
 
   AddAndType* object = new AddAndType();
   emit_sub("$8", RSP, s);
@@ -722,29 +717,30 @@ void VariableDecl_class::code(ostream &s) {
 
   if (cgen_debug) s<<"<the location of "<<variable->getName()<<" is "<<map->lookup(variable->getName())->add << ">"<<endl;
   
-  if (cgen_debug)
-    s << "-----/VariableDecl-----" <<endl;
-
+  if (cgen_debug) s << "-----/VariableDecl-----" <<endl;
 }
 
 void IfStmt_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------if----------"<<endl;
+  if (cgen_debug) s<<"-----------if----------"<<endl;
+
   condition->code(s);
+
   emit_test(RAX,RAX,s);
   int n = jumpNum;
   jumpNum++;
-  emit_je(generateJumpFlag(n),s);
+  s << JE << "    " << POSITION << to_string(n) << endl;
+
   thenexpr->code(s);
   int k = jumpNum;
   jumpNum++;
-  emit_jmp(generateJumpFlag(k),s);
-  s << generateJumpFlag(n) <<":" <<endl;
-  elseexpr->code(s);
-  s << generateJumpFlag(k) <<":" <<endl;
+  s << JMP << "   " << POSITION << to_string(k) << endl;
 
-  if (cgen_debug)
-    s<<"-----------/if----------"<<endl;
+  s << POSITION << to_string(n) <<":" <<endl;
+  elseexpr->code(s);
+
+  s << POSITION << to_string(k) <<":" <<endl;
+
+  if (cgen_debug) s<<"-----------/if----------"<<endl;
 }
 
 void WhileStmt_class::code(ostream &s) {
@@ -863,8 +859,8 @@ void ContinueStmt_class::code(ostream &s) {
 }
 
 void BreakStmt_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------break----------"<<endl;
+  if (cgen_debug) s<<"-----------break----------"<<endl;
+
   int k = breakPoint->lookup(1)->stmtNum;
   while(k!=0) {
     emit_pop("%r15",s);
@@ -873,240 +869,95 @@ void BreakStmt_class::code(ostream &s) {
   }
   emit_jmp(generateJumpFlag(breakPoint->lookup(1)->flag),s);
 
-  if (cgen_debug)
-    s<<"-----------/break----------"<<endl;
-
-}
-
-static void pushFloatRegister(ostream &s, const char*regName) {
-  emit_sub("$8","%rsp",s);
-  emit_movsd(regName,generateParam(0,"%rsp"),s);
-}
-
-static void popFloatRegister(ostream &s, const char*regName) {
-  emit_movsd(generateParam(0,"%rsp"),regName,s);
-  emit_add("$8","%rsp",s);
-}
-
-static char* generateInt(int a) {
-  int num=0;
-  int k =a;
-  while(a!=0) {
-    num++;
-    a/=10;
-  }
-  char* buf = new char(num);
-  for(int i=num-1;i>=0;i--) {
-    buf[i]=(k%10)+48;
-    k/=10;
-  }
-  return buf;
+  if (cgen_debug) s<<"-----------/break----------"<<endl;
 }
 
 void Call_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------call----------"<<endl;
+  if (cgen_debug) s<<"-----------call----------"<<endl;
 
-  emit_push("%rdi",s);
-  emit_push("%rsi",s);
-  emit_push("%rdx",s);
-  emit_push("%rcx",s);
-  emit_push("%r8",s);
-  emit_push("%r9",s);
-  pushFloatRegister(s, "%xmm0");
-  pushFloatRegister(s, "%xmm1");
-  pushFloatRegister(s, "%xmm2");
-  pushFloatRegister(s, "%xmm3");
-  // pushFloatRegister(s, "%xmm4");
-  // pushFloatRegister(s, "%xmm5");
-  // pushFloatRegister(s, "%xmm6");
-  // pushFloatRegister(s, "%xmm7");
+  for(int i=0;i<6;++i) emit_push(CALL_REGS[i],s);
+
+  for(int i=0;i<8;++i){
+    emit_sub("$8",RSP,s);
+    emit_movsd(CALL_XMM[i],generateParam(0,RSP),s);
+  }
 
   int fNum=0;
   int notFNum=0;
 
   for(int i = actuals->first(); actuals->more(i); i = actuals->next(i)) {
-    // if (cgen_debug) s << "actual("<<i<<")"<<endl;
-    // if (cgen_debug) s << "type: " << actuals->nth(i)->getType() << endl<<endl;
     actuals->nth(i)->code(s);
 
-    // if(actuals->nth(i)->getType()==Float){
-    //   fNum++;
-    //   emit_sub("$8","%rsp",s);
-    //   emit_mov("%xmm8",generateParam(0,"%rsp"),s);
-    // }
     if(actuals->nth(i)->getType()==Float) {
-      switch (fNum)
-      { 
-      case 0:
-        emit_mov("%xmm8","%xmm0",s);
+      if (fNum<8){
+        emit_mov(XMM8,CALL_XMM[fNum],s);
         fNum++;
-        break;
-      case 1:
-        emit_mov("%xmm8","%xmm1",s);
+      }
+      else{
+        emit_sub("$8",RSP,s);
+        emit_mov(XMM8,generateParam(0,RSP),s);
         fNum++;
-        break;
-      case 2:
-        emit_mov("%xmm8","%xmm2",s);
-        fNum++;
-        break;
-      case 3:
-        emit_mov("%xmm8","%xmm3",s);
-        fNum++;
-        break;
-      // case 4:
-      //   emit_mov("%xmm8","%xmm4",s);
-      //   fNum++;
-      //   break;
-      // case 5:
-      //   emit_mov("%xmm8","%xmm5",s);
-      //   fNum++;
-      //   break;
-      // case 6:
-      //   emit_mov("%xmm8","%xmm6",s);
-      //   fNum++;
-      //   break;
-      // case 7:
-      //   emit_mov("%xmm8","%xmm7",s);
-      //   fNum++;
-      //   break;
-      default:
-        emit_sub("$8","%rsp",s);
-        emit_mov("%xmm8",generateParam(0,"%rsp"),s);
-        fNum++;
-        break;
       }
     } 
-    else 
-    {switch (notFNum){
-      case 0:
-        emit_mov("%rax","%rdi",s);
+    else {
+      if(notFNum<6){
+        emit_mov(RAX,CALL_REGS[notFNum],s);
         notFNum++;
-        break;
-
-      case 1:
-        emit_mov("%rax","%rsi",s);
+      }
+      else{
+        emit_sub("$8",RSP,s);
+        emit_mov(RAX,generateParam(0,RSP),s);
         notFNum++;
-        break;
-      
-      case 2:
-        emit_mov("%rax","%rdx",s);
-        notFNum++;
-        break;
-      
-      case 3:
-        emit_mov("%rax","%rcx",s);
-        notFNum++;
-        break;
-      
-      case 4:
-        emit_mov("%rax","%r8",s);
-        notFNum++;
-        break;
-      
-      case 5:
-        emit_mov("%rax","%r9",s);
-        notFNum++;
-        break;
-
-      default:
-        emit_sub("$8","%rsp",s);
-        emit_mov("%rax",generateParam(0,"%rsp"),s);
-        notFNum++;
-        break;
       }
     }
   }
 
   if(name==print){
-    if(flag) emit_sub("$8","%rsp",s);
-    if(fNum) {
-      emit_irmovl(generateInt(fNum), EAX, s);
-    } 
-    else {
-      emit_irmovl("0", EAX, s);
-    } 
+    if(flag) emit_sub("$8",RSP,s);
+    s << MOVL << "$" << to_string(fNum) << COMMA << EAX << endl;
   }
 
   emit_call(name->get_string(),s);
 
   if(name==print){
-    if(flag) emit_add("$8","%rsp",s);
+    if(flag) emit_add("$8",RSP,s);
   }
   
-  // popFloatRegister(s, "%xmm7");
-  // popFloatRegister(s, "%xmm6");
-  // popFloatRegister(s, "%xmm5");
-  // popFloatRegister(s, "%xmm4");
-  popFloatRegister(s, "%xmm3");
-  popFloatRegister(s, "%xmm2");
-  popFloatRegister(s, "%xmm1");
-  popFloatRegister(s, "%xmm0");
-  emit_pop("%r9",s);
-  emit_pop("%r8",s);
-  emit_pop("%rcx",s);
-  emit_pop("%rdx",s);
-  emit_pop("%rsi",s);
-  emit_pop("%rdi",s);
-
-  //
-  /*
-   if function name is printf
-
-    // please set %eax to the number of Float parameters, num.
-    //  把%eax赋值为Float类型的参数个数, num
-    emit_sub("$8", RSP, s);
-    emit_irmovl(num, EAX, s);
-    emit_call("printf", s);
-      
-    return;
+  for(int i=7;i>=0;--i){
+    emit_movsd(generateParam(0,RSP),CALL_XMM[i],s);
+    emit_add("$8",RSP,s);
   }
-  */
-  //
+  for(int i=5;i>=0;--i) emit_pop(CALL_REGS[i],s);
 
-  if (cgen_debug)
-    s<<"-----------/call----------"<<endl;
-
+  if (cgen_debug) s<<"-----------/call----------"<<endl;
 }
 
 void Actual_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"<actual>"<<endl;
-  // s<<"<call expr->code(s)>"<<endl;
+  if (cgen_debug) s<<"<actual>"<<endl;
 
   expr->code(s);
-  // s<<"</call expr->code(s)>"<<endl;
   
-  if (cgen_debug)
-    s<<"</actual>"<<endl;
+  if (cgen_debug) s<<"</actual>"<<endl;
 }
 
 void Assign_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"<assign>"<<endl;
+  if (cgen_debug) s<<"<assign>"<<endl;
 
   value->code(s);
+
   if(map->lookup(lvalue)->isFloat) {
     if(value->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    if(map->lookup(lvalue)->inRegister) {
-      emit_mov("%xmm8",map->lookup(lvalue)->add,s);
-    } else {
-      emit_movsd("%xmm8",map->lookup(lvalue)->add,s);
-    }
-  } else {
-    emit_mov("%rax",map->lookup(lvalue)->add,s);
-  }
-  // if(value->isFloat()&&map->lookup(lvalue)->isFloat) {
-  //   emit_movsd("%rax","%xmm8");
-  //   emit_movsd
-  // }
+    if(map->lookup(lvalue)->inRegister) 
+      emit_mov(XMM8, map->lookup(lvalue)->add,s);
+    else 
+      emit_movsd(XMM8, map->lookup(lvalue)->add,s);
+  } 
+  else emit_mov(RAX,map->lookup(lvalue)->add,s);
 
-  if (cgen_debug)
-    s<<"</assign>"<<endl;
-
+  if (cgen_debug) s<<"</assign>"<<endl;
 }
 
 void Add_class::code(ostream &s) {
@@ -1115,26 +966,27 @@ void Add_class::code(ostream &s) {
   if(getType()==Float) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_addsd("%xmm9", "%xmm8", s);
-  } else {
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_addsd(XMM9, XMM8, s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx", s);
-    emit_add("%rbx","%rax",s);
+    emit_pop(RBX, s);
+    emit_add(RBX, RAX, s);
   }
 
   if (cgen_debug) s<<"</add>"<<endl;
@@ -1142,116 +994,130 @@ void Add_class::code(ostream &s) {
 
 void Minus_class::code(ostream &s) {
   if (cgen_debug) s<<"<minus>"<<endl;
-
+  
   if(getType()==Float) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_subsd("%xmm9", "%xmm8", s);
-  } else {
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_subsd(XMM9, XMM8, s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx", s);
-    emit_sub("%rbx","%rax",s);
+    emit_pop(RBX, s);
+    emit_sub(RBX, RAX, s);
   }
 
   if (cgen_debug) s<<"</minus>"<<endl;
-
 }
 
 void Multi_class::code(ostream &s) {
+  if (cgen_debug) s<<"<mul>"<<endl;
   
   if(getType()==Float) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_mulsd("%xmm9", "%xmm8", s);
-  } else {
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_mulsd(XMM9, XMM8, s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx", s);
-    emit_mul("%rbx","%rax",s);
+    emit_pop(RBX, s);
+    emit_mul(RBX, RAX, s);
   }
 
+  if (cgen_debug) s<<"</mul>"<<endl;
 }
 
 void Divide_class::code(ostream &s) {
+  if (cgen_debug) s<<"<div>"<<endl;
   
   if(getType()==Float) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_divsd("%xmm9", "%xmm8", s);
-  } else {
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_divsd(XMM9, XMM8, s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx", s);
-    emit_div("%rbx",s);
+    emit_pop(RBX, s);
+    emit_div(RBX,s);
   }
+
+  if (cgen_debug) s<<"</div>"<<endl;
 
 }
 
 void Mod_class::code(ostream &s) {
+  if (cgen_debug) s<<"<mod>"<<endl;
+
   e2->code(s);
-  emit_push("%rax", s);
+  emit_push(RAX, s);
   e1->code(s);
-  emit_xor("%rdx","%rdx",s);
-  emit_pop("%r13",s);
-  emit_div("%r13",s);
-  emit_mov("%rdx","%rax",s);
+  emit_xor(RDX,RDX,s);
+  emit_pop(R13,s);
+  emit_div(R13,s);
+  emit_mov(RDX,RAX,s);
+
+  if (cgen_debug) s<<"</mod>"<<endl;
+
 }
 
 void Neg_class::code(ostream &s) {
   if (cgen_debug) s<<"<neg>"<<endl;
+
   if(e1->getType()==Float) {
     e1->code(s);
-    emit_mov("%xmm8","%xmm9",s);
-    emit_mov("$0","%rax",s);
-    emit_int_to_float("%rax","%xmm8",s);
-    emit_subsd("%xmm9","%xmm8",s);
-  } else {
+    emit_mov(XMM8,XMM9,s);
+    emit_mov("$0",RAX,s);
+    emit_int_to_float(RAX,XMM8,s);
+    emit_subsd(XMM9,XMM8,s);
+  } 
+  else {
     e1->code(s);
-    emit_not("%rax",s);
-    emit_add("$1","%rax",s);
+    emit_not(RAX,s);
+    emit_add("$1",RAX,s);
   }
 
   if (cgen_debug) s<<"</neg>"<<endl;
@@ -1265,35 +1131,35 @@ void Lt_class::code(ostream &s) {
   if(hasFloat) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
+
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_xor("%r13","%r13",s);
-    emit_ucompisd("%xmm8","%xmm9",s);
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_xor(R13,R13,s);
+    emit_ucompisd(XMM8,XMM9,s);
     emit_setg("%r13b",s);
-    emit_mov("%r13","%rax",s);
-  } else {
+    emit_mov(R13,RAX,s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx",s);
-    emit_xor("%r13","%r13",s);
-    emit_cmp("%rax","%rbx",s);
+    emit_pop(RBX,s);
+    emit_xor(R13,R13,s);
+    emit_cmp(RAX,RBX,s);
     emit_setg("%r13b",s);
-    // emit_setge("%r13b",s);
-    emit_mov("%r13","%rax",s);
+    emit_mov(R13,RAX,s);
   }
-
   if (cgen_debug) s<<"</lt>"<<endl;
 
 }
@@ -1306,33 +1172,34 @@ void Le_class::code(ostream &s) {
   if(hasFloat) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
+
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_xor("%r13","%r13",s);
-    emit_ucompisd("%xmm8","%xmm9",s);
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_xor(R13,R13,s);
+    emit_ucompisd(XMM8,XMM9,s);
     emit_setge("%r13b",s);
-    emit_mov("%r13","%rax",s);
-  } else {
+    emit_mov(R13,RAX,s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx",s);
-    emit_xor("%r13","%r13",s);
-    emit_cmp("%rax","%rbx",s);
+    emit_pop(RBX,s);
+    emit_xor(R13,R13,s);
+    emit_cmp(RAX,RBX,s);
     emit_setge("%r13b",s);
-    emit_mov("%r13","%rax",s);
-    // emit_cmp("%rbx","%rax",s);
+    emit_mov(R13,RAX,s);
   }
 
   if (cgen_debug) s<<"</le>"<<endl;
@@ -1340,195 +1207,217 @@ void Le_class::code(ostream &s) {
 
 // e1 == e2
 void Equ_class::code(ostream &s) {
+  if (cgen_debug) s<<"<eq>"<<endl;
+
   bool hasFloat = (e1->getType()==Float)||(e2->getType()==Float);
   if(hasFloat) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
+
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_xor("%r13","%r13",s);
-    emit_ucompisd("%xmm8","%xmm9",s);
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_xor(R13,R13,s);
+    emit_ucompisd(XMM8,XMM9,s);
     emit_sete("%r13b",s);
-    emit_mov("%r13","%rax",s);
-  } else {
+    emit_mov(R13,RAX,s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx",s);
-    emit_xor("%r13","%r13",s);
-    emit_cmp("%rax","%rbx",s);
+    emit_pop(RBX,s);
+    emit_xor(R13,R13,s);
+    emit_cmp(RAX,RBX,s);
     emit_sete("%r13b",s);
-    emit_mov("%r13","%rax",s);
+    emit_mov(R13,RAX,s);
   }
+
+  if (cgen_debug) s<<"</eq>"<<endl;
 }
 
 // e1!=e2
 void Neq_class::code(ostream &s) {
+  if (cgen_debug) s<<"<neq>"<<endl;
+
   bool hasFloat = (e1->getType()==Float)||(e2->getType()==Float);
   if(hasFloat) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
+
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_xor("%r13","%r13",s);
-    emit_ucompisd("%xmm8","%xmm9",s);
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_xor(R13,R13,s);
+    emit_ucompisd(XMM8,XMM9,s);
     emit_setne("%r13b",s);
-    emit_mov("%r13","%rax",s);
-  } else {
+    emit_mov(R13,RAX,s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx",s);
-    emit_xor("%r13","%r13",s);
-    emit_cmp("%rax","%rbx",s);
+    emit_pop(RBX,s);
+    emit_xor(R13,R13,s);
+    emit_cmp(RAX,RBX,s);
     emit_setne("%r13b",s);
-    emit_mov("%r13","%rax",s);
+    emit_mov(R13,RAX,s);
   }
-}
 
+  if (cgen_debug) s<<"</neq>"<<endl;
+}
 
 // e1 >= e2
 void Ge_class::code(ostream &s) {
+  if (cgen_debug) s<<"<ge>"<<endl;
+
   bool hasFloat = (e1->getType()==Float)||(e2->getType()==Float);
   if(hasFloat) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
+
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_xor("%r13","%r13",s);
-    emit_ucompisd("%xmm8","%xmm9",s);
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_xor(R13,R13,s);
+    emit_ucompisd(XMM8,XMM9,s);
     emit_setle("%r13b",s);
-    emit_mov("%r13","%rax",s);
-  } else {
+    emit_mov(R13,RAX,s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx",s);
-    emit_xor("%r13","%r13",s);
-    emit_cmp("%rax","%rbx",s);
+    emit_pop(RBX,s);
+    emit_xor(R13,R13,s);
+    emit_cmp(RAX,RBX,s);
     emit_setle("%r13b",s);
-    emit_mov("%r13","%rax",s);
+    emit_mov(R13,RAX,s);
   }
+
+  if (cgen_debug) s<<"</ge>"<<endl;
 }
 
 // e1 > e2
 void Gt_class::code(ostream &s) {
+  if (cgen_debug) s<<"<gt>"<<endl;
+
   bool hasFloat = (e1->getType()==Float)||(e2->getType()==Float);
   if(hasFloat) {
     e2->code(s);
     if(e2->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8",s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8,s);
     }
-    emit_mov("%xmm8","%r12",s);
-    emit_push("%r12",s);
+    emit_mov(XMM8,R12,s);
+    emit_push(R12,s);
+
     e1->code(s);
     if(e1->getType()==Int) {
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_int_to_float("%rax", "%xmm8", s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_int_to_float(RAX, XMM8, s);
     }
-    emit_pop("%r13", s);
-    emit_xorpd("%xmm9", "%xmm9", s);
-    emit_mov("%r13","%xmm9",s);
-    emit_xor("%r13","%r13",s);
-    emit_ucompisd("%xmm8","%xmm9",s);
+    emit_pop(R13, s);
+    emit_xorpd(XMM9, XMM9, s);
+    emit_mov(R13,XMM9,s);
+    emit_xor(R13,R13,s);
+    emit_ucompisd(XMM8,XMM9,s);
     emit_setl("%r13b",s);
-    emit_mov("%r13","%rax",s);
-  } else {
+    emit_mov(R13,RAX,s);
+  } 
+  else {
     e2->code(s);
-    emit_push("%rax", s);
+    emit_push(RAX, s);
     e1->code(s);
-    emit_pop("%rbx",s);
-    emit_xor("%r13","%r13",s);
-    emit_cmp("%rax","%rbx",s);
+    emit_pop(RBX,s);
+    emit_xor(R13,R13,s);
+    emit_cmp(RAX,RBX,s);
     emit_setl("%r13b",s);
-    emit_mov("%r13","%rax",s);
+    emit_mov(R13,RAX,s);
   }
+
+  if (cgen_debug) s<<"</gt>"<<endl;
+
 }
 
 void And_class::code(ostream &s) {
   e2->code(s);
-  emit_push("%rax", s);
+  emit_push(RAX, s);
   e1->code(s);
-  emit_pop("%rbx", s);
-  emit_and("%rbx","%rax", s);
+  emit_pop(RBX, s);
+  emit_and(RBX,RAX, s);
 }
 
 void Or_class::code(ostream &s) {
   e2->code(s);
-  emit_push("%rax", s);
+  emit_push(RAX, s);
   e1->code(s);
-  emit_pop("%rbx", s);
-  emit_or("%rbx","%rax", s);
+  emit_pop(RBX, s);
+  emit_or(RBX, RAX, s);
 }
 
 void Xor_class::code(ostream &s) {
   e2->code(s);
-  emit_push("%rax", s);
+  emit_push(RAX, s);
   e1->code(s);
-  emit_pop("%rbx", s);
-  emit_xor("%rbx","%rax", s);
+  emit_pop(RBX, s);
+  emit_xor(RBX,RAX, s);
 }
 
 void Not_class::code(ostream &s) {
   e1->code(s);
-  emit_not("%rax",s);
+  emit_not(RAX,s);
 }
 
 void Bitnot_class::code(ostream &s) {
-
   e1->code(s);
-
-  emit_not("%rax",s);
+  emit_not(RAX,s);
 }
 
 void Bitand_class::code(ostream &s) {
   e2->code(s);
-  emit_push("%rax", s);
+  emit_push(RAX, s);
   e1->code(s);
-  emit_pop("%rbx", s);
-  emit_and("%rbx","%rax", s);
+  emit_pop(RBX, s);
+  emit_and(RBX,RAX, s);
 }
 
 void Bitor_class::code(ostream &s) {
   e2->code(s);
-  emit_push("%rax", s);
+  emit_push(RAX, s);
   e1->code(s);
-  emit_pop("%rbx", s);
-  emit_or("%rbx","%rax", s);
+  emit_pop(RBX, s);
+  emit_or(RBX,RAX, s);
 }
 
 
@@ -1541,9 +1430,14 @@ void Const_int_class::code(ostream &s) {
 }
 
 void Const_string_class::code(ostream &s) {
+  if (cgen_debug) s<<"<string const>"<<endl;
+
   s<< MOV;
   stringtable.lookup_string(value->get_string())->code_ref(s);
   s<< COMMA << RAX << endl;
+
+  if (cgen_debug) s<<"</string const>"<<endl;
+
 }
 
 
