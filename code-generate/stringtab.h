@@ -53,6 +53,7 @@ public:
     return true;
     return false;
   }
+  int get_index() {return index;}
 };
 
 //

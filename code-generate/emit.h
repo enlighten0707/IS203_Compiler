@@ -74,6 +74,9 @@
 #define XMM5    "%xmm5"     // float register
 #define XMM6    "%xmm6"     // float register
 #define XMM7    "%xmm7"     // float register
+#define XMM8    "%xmm8"     // float register
+#define XMM9    "%xmm9"     // float register
+
 
 //
 // Opcodes

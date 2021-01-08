@@ -16,11 +16,10 @@ extern int cgen_debug;
 extern SymbolTable<Symbol ,char> *map;
 
 static char *CALL_REGS[] = {RDI, RSI, RDX, RCX, R8, R9};
-static char *CALL_XMM[] = {XMM0, XMM1, XMM2, XMM3};
+static char *CALL_XMM[] = {XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7};
 
 void cgen_helper(Decls decls, ostream& s);
 void code(Decls decls, ostream& s);
-
 
 //////////////////////////////////////////////////////////////////
 //
@@ -32,7 +31,7 @@ void code(Decls decls, ostream& s);
 
 // you can add any helper functions here
 
-static char * generateStringAdd(int n) {
+static char* generateJumpFlag(int n) {
   int num;
   int k = n;
   if(n==0) {
@@ -44,11 +43,12 @@ static char * generateStringAdd(int n) {
       num++;
     }
   }
-  char *buf = new char(3+num);
+  char *buf = new char(4+num);
   buf[0]='.';
-  buf[1]='L';
-  buf[2]='C';
-  for(int i=num+2;i>=3;i--) {
+  buf[1]='P';
+  buf[2]='O';
+  buf[3]='S';
+  for(int i=num+3;i>=4;i--) {
     buf[i]=(k%10)+48;
     k/=10;
   }
@@ -98,45 +98,19 @@ static void initialize_constants(void)
 //
 //*********************************************************
 
-static char* generateGoodString(const char*str){
-  int numOfAll=0;
-  for(int i=0;str[i]!='\0';i++) {
-    numOfAll++;
-    if(str[i]=='\n'||str[i]=='\t') {
-      numOfAll++;
-    }
-  }
-  int num=0;
-  char* buf = new char(numOfAll+1);
-  buf[numOfAll]='\0';
-  for(int i=0;str[i]!='\0';i++) {
-    if(str[i]=='\n'||str[i]=='\t') {
-      buf[i+num]='\\';
-      if(str[i]=='\n') {
-        buf[i+1+num]='n';
-      } else {
-        buf[i+1+num]='t';
-      }
-      num++;
-    } else {
-      buf[i+num]=str[i];
-    }
-  }
-  return buf;
-}
+
 void Program_class::cgen(ostream &os) 
 {
+
+  cgen_debug=0;
+  // cgen_debug=1;
+
   // spim wants comments to start with '#'
   os << "# start of generated code\n";
-  strMap->enterscope();
   initialize_constants();
   cgen_helper(decls,os);
   os << "\t.section\t.rodata"<<endl;
-  for(int i=0;i<StringNum;i++) {
-    os << generateStringAdd(i) << ":\n";
-    os << "\t.string\t\"" << generateGoodString(strMap->lookup(i)) <<"\""<< endl;
-  }
-  strMap->exitscope();
+  stringtable.code_string_table(os);
   os << "\n# end of generated code\n";
 }
 
@@ -160,18 +134,6 @@ static void emit_mov(const char *source, const char *dest, ostream& s)
   s << MOV << source << COMMA << dest << endl;
 }
 
-static void emit_rmmov(const char *source_reg, int offset, const char *base_reg, ostream& s)
-{
-  s << MOV << source_reg << COMMA << offset << "(" << base_reg << ")"
-      << endl;
-}
-
-static void emit_mrmov(const char *base_reg, int offset, const char *dest_reg, ostream& s)
-{
-  s << MOV << offset << "(" << base_reg << ")" << COMMA << dest_reg  
-      << endl;
-}
-
 static void emit_irmov(const char *immidiate, const char *dest_reg, ostream& s)
 {
   s << MOV << "$" << immidiate << COMMA << dest_reg  
@@ -184,11 +146,6 @@ static void emit_irmovl(const char *immidiate, const char *dest_reg, ostream& s)
       << endl;
 }
 
-static void emit_immov(const char *immidiate, int offset, const char *base_reg, ostream& s)
-{
-  s << MOV << "$" << immidiate << COMMA << "(" << offset << ")" << base_reg  
-      << endl;
-}
 
 static void emit_add(const char *source_reg, const char *dest_reg, ostream& s)
 {
@@ -208,11 +165,6 @@ static void emit_mul(const char *source_reg, const char *dest_reg, ostream& s)
 static void emit_div(const char *dest_reg, ostream& s)
 {
   s << DIV << dest_reg << endl;
-}
-
-static void emit_cqto(ostream &s)
-{
-  s << CQTO << endl;
 }
 
 static void emit_neg(const char *dest_reg, ostream& s)
@@ -399,18 +351,6 @@ static void emit_int_to_float(const char *int_reg, const char *float_mmx, ostrea
   s << CVTSI2SDQ << int_reg << COMMA << float_mmx << endl;
 }
 
-static void emit_dot_text(ostream& s) {
-  s << DOTTEXT << endl;
-}
-
-static void emit_function_information(const char* fName, ostream &s) {
-  s << "\t.global\t" << fName << endl << "\t.type\t"<<fName<<", @function"<<endl;
-}
-
-static void emit_end_of_function(const char* fName,ostream &s) {
-  s << "\t.size\t"<<fName<<", .-"<<fName<<endl;
-}
-
 static void emit_sete(const char* reg, ostream &s) {
   s << "\tsete\t" << reg << endl; 
 }
@@ -476,15 +416,15 @@ void StrTable::code_string_table(ostream& s)
 }
 
 // the following 2 functions are useless, please DO NOT care about them
-void FloatEntry::code_ref(ostream &s)
-{
-  s << FLOATTAG << index;
-}
+// void FloatEntry::code_ref(ostream &s)
+// {
+//   s << FLOATTAG << index;
+// }
 
-void IntEntry::code_def(ostream &s)
-{
-  s << GLOBAL;
-}
+// void IntEntry::code_def(ostream &s)
+// {
+//   s << GLOBAL;
+// }
 
 //***************************************************
 //
@@ -526,9 +466,9 @@ void code_global_data(Decls decls, ostream &str)
 }
 
 void code_calls(Decls decls, ostream &str) {
-  for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
-    decls->nth(i)->code(str);
-  }
+  // for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
+  //   decls->nth(i)->code(str);
+  // }
 }
 
 //***************************************************
@@ -537,8 +477,6 @@ void code_calls(Decls decls, ostream &str) {
 //  declare the global names.
 //
 //***************************************************
-
-
 
 //********************************************************
 //
@@ -555,13 +493,16 @@ void cgen_helper(Decls decls, ostream& s)
 
 void code(Decls decls, ostream& s)
 {
-  emit_dot_text(s);
+  s << TEXT << endl;
+  for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
+    decls->nth(i)->code(s);
+  }
 
-  if (cgen_debug) cout << "Coding calls" << endl;
-  code_calls(decls, s);
+  // if (cgen_debug) s << "Coding calls" << endl;
+  // code_calls(decls, s);
 
-  if (cgen_debug) cout << "Coding global data" << endl;
-  code_global_data(decls, s);
+  // if (cgen_debug) s << "Coding global data" << endl;
+  // code_global_data(decls, s);
 }
 
 
@@ -642,19 +583,19 @@ char* generateParam(int n, char* str) {
 
 void CallDecl_class::code(ostream &s) {
   map->enterscope();
-  emit_position(name->get_string(),s);
-  emit_function_information(name->get_string(),s);
-  //s<< "----------------保存callee-saved-registers------------------"<<endl;
-  emit_push("%rbp", s);
-  emit_mov("%rsp", "%rbp", s);
-  emit_push("%rbx", s);
-  emit_push("%r12", s);
-  emit_push("%r13", s);
-  emit_push("%r14", s);
-  emit_push("%r15", s);
-
+  
+  s << name->get_string() << ":" << endl;
+  s << GLOBAL << name->get_string() << endl;
+  s << SYMBOL_TYPE <<name->get_string() << COMMA << "@function" <<endl;
+  
+  emit_push(RBP, s);
+  emit_mov(RSP, RBP, s);
+  emit_push(RBX, s);
+  emit_push(R12, s);
+  emit_push(R13, s);
+  emit_push(R14, s);
+  emit_push(R15, s);
   rspAdd=-40;
-
 
   int number_i = 0;
   int number_f = 0;
@@ -663,207 +604,67 @@ void CallDecl_class::code(ostream &s) {
 
   for(int i = paras->first(),j=0,k=0;paras->more(i); i = paras->next(i)) {
     if(paras->nth(i)->isFloat()) {
-      if(k<8)
-        k++;
+      if(k<8) k++;
       else paraNumInStack++;
-    } else {
-      if(j<6)
-        j++;
+    } 
+    else {
+      if(j<6) j++;
       else paraNumInStack++;
     }
   }
 
   for(int i = paras->first(),index=1; paras->more(i); i = paras->next(i)) {
+    /*
+    struct AddAndType {
+    char* add;
+    bool isFloat;
+    bool inRegister;
+    };
+    */
+
     AddAndType *object = new AddAndType();
     if(paras->nth(i)->isFloat()) {
       object->isFloat=true;
-      switch (number_f)
-      {
-      case 0:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm0", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm0";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-
-
-        //s<<"the location of "<<paras->nth(i)->getName()<<" is "<<map->lookup(paras->nth(i)->getName())->add<<endl;
-        //s<<"the type of "<<paras->nth(i)->getName()<<" is "<<map->lookup(paras->nth(i)->getName())->isFloat<<endl;
-        // s << paras->nth(i)->getString() << endl;
-        // varTable->addid(paras->nth(i)->getString(), new int(address));
-        // s << (varTable->lookup(paras->nth(i)->getString())) << endl;
-        // varTable->addid("test",new int(2));
-        number_f++;
-        break;
-
-      case 1:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm1", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm1";
+      if(number_f<8){
+        object->add=CALL_XMM[number_f];
         object->inRegister=1;
         map->addid(paras->nth(i)->getName(),object);
         number_f++;
-        break;
-
-      case 2:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm2", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm2";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_f++;
-        break;
-      
-      case 3:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm3", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm3";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_f++;
-        break;
-
-      case 4:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm4", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm4";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_f++;
-        break;
-
-      case 5:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm5", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm5";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_f++;
-        break;
-
-      case 6:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm6", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm6";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_f++;
-        break;
-
-      case 7:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd("%xmm7", "(%rsp)", s);
-        // address-=8;
-        object->add="%xmm7";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_f++;
-        break;
-
-      default:
-        // emit_sub("$8", "%rsp", s);
-        // emit_movsd(generateParam(16+(paraNumInStack-index)*8,"%rbp"), "%xmm0", s);
-        // emit_movsd("%xmm0", "(%rsp)" ,s);
-        // address-=8;
-        object->inRegister=0;
-        object->add=generateParam(16+(paraNumInStack-index)*8,"%rbp");
-        map->addid(paras->nth(i)->getName(),object);
-        index++;
-        break;
       }
-      
-    } else {
-      object->isFloat=false;
-      switch (number_i)
-      {
-      case 0:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov("%rdi", "(%rsp)", s);
-        // address-=8;
-        object->add="%rdi";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_i++;
-        break;
-
-      case 1:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov("%rsi", "(%rsp)", s);
-        // address-=8;
-        object->add="%rsi";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_i++;
-        break;
-
-      case 2:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov("%rdx", "(%rsp)", s);
-        // address-=8;
-        object->add="%rdx";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_i++;
-        break;
-        
-      case 3:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov("%rcx", "(%rsp)", s);
-        // address-=8;
-        object->add="%rcx";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_i++;
-        break;
-
-      case 4:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov("%r8", "(%rsp)", s);
-        // address-=8;
-        object->add="%r8";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_i++;
-        break;
-
-      case 5:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov("%r9", "(%rsp)", s);
-        // address-=8;
-        object->add="%r9";
-        object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
-        number_i++;
-        break;
-      
-      default:
-        // emit_sub("$8", "%rsp", s);
-        // emit_mov(generateParam(16+(paraNumInStack-index)*8,"%rbp"), "%rax" ,s);
-        // emit_mov("%rax", "(%rsp)", s);
-        // address-=8;
+      else{
         object->inRegister=0;
-        object->add=generateParam(16+(paraNumInStack-index)*8,"%rbp");
+        object->add=generateParam(16+(paraNumInStack-index)*8,RBP);
         map->addid(paras->nth(i)->getName(),object);
         index++;
-        break;
+      }
+    } 
+    else {
+      object->isFloat=false;
+      if (number_i<6){
+        object->add=CALL_REGS[number_i];
+        object->inRegister=1;
+        map->addid(paras->nth(i)->getName(),object);
+        number_i++;
+      }
+      else{
+        object->inRegister=0;
+        object->add=generateParam(16+(paraNumInStack-index)*8,RBP);
+        map->addid(paras->nth(i)->getName(),object);
+        index++;
       }
     }
   }
   stmtIndex=0;
-  // s << (varTable->lookup("x1")) <<"\n";
   body->code(s);
-  emit_end_of_function(name->get_string(),s);
+  s << SIZE << name->get_string()<<", .-"<< name->get_string()<<endl;
   map->exitscope();
 }
 
 void StmtBlock_class::code(ostream &s) {
+
+  if (cgen_debug)
+    s << "-----StmtBlock-----" <<endl;
+
   if(breakPoint->lookup(1)!=NULL) {
     breakPoint->lookup(1)->stmtNum++;
   }
@@ -872,24 +673,24 @@ void StmtBlock_class::code(ostream &s) {
   }
   map->enterscope();
   stmtIndex++;
-  emit_xor("%r15","%r15",s);
+
+  emit_xor(R15,R15,s);
+
   flag = 0;
   for(int i = vars->first(); vars->more(i); i = vars->next(i)) {
-    // s<< "-------------分配内存给函数内定义的变量--------------"<<endl;
     vars->nth(i)->code(s);
     flag = !flag;
-    emit_add("$8","%r15",s);
+    emit_add("$8",R15,s);
   }
   
-  emit_push("%r15",s);
+  emit_push(R15,s);
   rspAdd-=8;
-  for(int i = stmts->first(); stmts->more(i); i = stmts->next(i)) {
-    // s<< "-------------翻译statements--------------"<<endl;
+  for(int i = stmts->first(); stmts->more(i); i = stmts->next(i))
     stmts->nth(i)->code(s);
-  }
 
-  emit_pop("%r15",s);
-  emit_add("%r15","%rsp",s);
+  emit_pop(R15,s);
+  emit_add(R15,RSP,s);
+
   stmtIndex--;
   if(breakPoint->lookup(1)!=NULL) {
     breakPoint->lookup(1)->stmtNum--;
@@ -899,83 +700,38 @@ void StmtBlock_class::code(ostream &s) {
   }
   map->exitscope();
 
-  // for(int i = stmts->first(); stmts->more(i); i = stmts->next(i)) {
-  //   stmts->nth(i)->code(map, s);
-  // }
-  // stmts->nth(0)->dump(s,0);
-  // s << stmts->nth(0)->getLeft() << "'s address is";
+  if (cgen_debug)
+    s << "-----/StmtBlock-----" <<endl;
 
-  // s << map->lookup(stmts->nth(0)->getLeft()) << endl;
 }
-
-// void VariableDecl_class::code(SymbolTable<Symbol ,char> *map,int rspAddress, int index, ostream &s) {
-//   emit_sub("$8", "%rsp", s);
-//   map->addid(variable->getName(),generateParam(rspAddress-index*8,"%rbp"));
-// }
 
 void VariableDecl_class::code(ostream &s) {
+  if (cgen_debug)
+    s << "-----VariableDecl-----" <<endl;
+
   AddAndType* object = new AddAndType();
-  emit_sub("$8", "%rsp", s);
+  emit_sub("$8", RSP, s);
   rspAdd-=8;
   object->inRegister=0;
-  object->add = generateParam(rspAdd,"%rbp");
+  object->add = generateParam(rspAdd,RBP);
   object->isFloat = getType()->isFloat();
+
+  if(cgen_debug) s << "<add var \t"<<variable->getName() << "\t"<< object->add << ">" << endl;
+  
   map->addid(variable->getName(),object);
-  //s<<"the location of "<<variable->getName()<<" is "<<map->lookup(variable->getName())->add<<endl;
-  //s<<"the type of "<<variable->getName()<<" is "<<map->lookup(variable->getName())->isFloat<<endl;
-}
 
+  if (cgen_debug) s<<"<the location of "<<variable->getName()<<" is "<<map->lookup(variable->getName())->add << ">"<<endl;
+  
+  if (cgen_debug)
+    s << "-----/VariableDecl-----" <<endl;
 
-static char* getImmediateInt(char* str) {
-  int i = 0;
-  while(str[i]!='\0') {
-    i++;
-  }
-  char *buf = new char(i+1);
-  buf[0]='$';
-  for(int i=0;str[i]!='\0';i++) {
-    buf[i+1]=str[i];
-  }
-  return buf;
-}
-
-static char* getImmediateFloat(char* str) {
-  double x = stof(str);
-  long long unsigned k = *(long*)(&x);
-  char*buf = new char(19);
-  buf[0]='$';
-  sprintf(buf+1, "0x%llx", k);
-  return buf;
-}
-
-static char* generateJumpFlag(int n) {
-  int num;
-  int k = n;
-  if(n==0) {
-    num =1;
-  } else {
-    num=0;
-    while (n!=0) {
-      n/=10;
-      num++;
-    }
-  }
-  char *buf = new char(4+num);
-  buf[0]='.';
-  buf[1]='P';
-  buf[2]='O';
-  buf[3]='S';
-  for(int i=num+3;i>=4;i--) {
-    buf[i]=(k%10)+48;
-    k/=10;
-  }
-  return buf;
 }
 
 void IfStmt_class::code(ostream &s) {
-  // s<<"-----------if----------"<<endl;
+  if (cgen_debug)
+    s<<"-----------if----------"<<endl;
   condition->code(s);
-  emit_test("%rax","%rax",s);
+  emit_test(RAX,RAX,s);
   int n = jumpNum;
   jumpNum++;
   emit_je(generateJumpFlag(n),s);
@@ -986,10 +742,15 @@ void IfStmt_class::code(ostream &s) {
   s << generateJumpFlag(n) <<":" <<endl;
   elseexpr->code(s);
   s << generateJumpFlag(k) <<":" <<endl;
+
+  if (cgen_debug)
+    s<<"-----------/if----------"<<endl;
 }
 
 void WhileStmt_class::code(ostream &s) {
-  // s<<"-----------while----------"<<endl;
+  if (cgen_debug)
+    s<<"-----------while----------"<<endl;
+
   breakPoint->enterscope();
   int n = jumpNum;
   jumpNum++;
@@ -1007,17 +768,29 @@ void WhileStmt_class::code(ostream &s) {
   emit_jmp(generateJumpFlag(n),s);
   s << generateJumpFlag(k) <<":" <<endl;
   breakPoint->exitscope();
+
+  if (cgen_debug)
+    s<<"-----------/while----------"<<endl;
 }
 
 void ForStmt_class::code(ostream &s) {
-  // s<<"-----------for----------"<<endl;
+  if (cgen_debug)
+    s<<"-----------for----------"<<endl;
+
+  if(cgen_debug) s<<"<for-initexpr>"<<endl;
   initexpr->code(s);
+  if(cgen_debug) s<<"</for-initexpr>"<<endl;
+
   breakPoint->enterscope();
   continuePoint->enterscope();
   int n = jumpNum;
   jumpNum++;
   s << generateJumpFlag(n) <<":" <<endl;
+
+  if(cgen_debug) s<<"<for-condition>"<<endl;
   condition->code(s);
+  if(cgen_debug) s<<"</for-condition>"<<endl;
+
   emit_test("%rax","%rax",s);
   int k = jumpNum;
   Help *breakObject = new Help();
@@ -1039,10 +812,16 @@ void ForStmt_class::code(ostream &s) {
   s << generateJumpFlag(k) <<":" <<endl;
   breakPoint->exitscope();
   continuePoint->exitscope();
+
+  if (cgen_debug)
+    s<<"-----------/for----------"<<endl;
+
 }
 
 void ReturnStmt_class::code(ostream &s) {
-  // s<<"-----------return----------"<<endl;
+  if (cgen_debug)
+    s<<"-----------return----------"<<endl;
+
   value->code(s);
   if(value->isFloat()) {
     emit_xorpd("%xmm0", "%xmm0", s);
@@ -1062,10 +841,15 @@ void ReturnStmt_class::code(ostream &s) {
   emit_pop("%rbx", s);
   emit_pop("%rbp", s);
   emit_ret(s);
+
+  if (cgen_debug)
+    s<<"-----------/return----------"<<endl;
+
 }
 
 void ContinueStmt_class::code(ostream &s) {
-  //s<<"-----------continue----------"<<endl;
+  if (cgen_debug)
+    s<<"-----------continue----------"<<endl;
   int k = continuePoint->lookup(1)->stmtNum;
   while(k!=0) {
     emit_pop("%r15",s);
@@ -1073,10 +857,14 @@ void ContinueStmt_class::code(ostream &s) {
     k--;
   }
   emit_jmp(generateJumpFlag(continuePoint->lookup(1)->flag),s);
+
+  if (cgen_debug)
+    s<<"-----------/continue----------"<<endl;
 }
 
 void BreakStmt_class::code(ostream &s) {
-  //s<<"-----------break----------"<<endl;
+  if (cgen_debug)
+    s<<"-----------break----------"<<endl;
   int k = breakPoint->lookup(1)->stmtNum;
   while(k!=0) {
     emit_pop("%r15",s);
@@ -1084,6 +872,10 @@ void BreakStmt_class::code(ostream &s) {
     k--;
   }
   emit_jmp(generateJumpFlag(breakPoint->lookup(1)->flag),s);
+
+  if (cgen_debug)
+    s<<"-----------/break----------"<<endl;
+
 }
 
 static void pushFloatRegister(ostream &s, const char*regName) {
@@ -1112,279 +904,151 @@ static char* generateInt(int a) {
 }
 
 void Call_class::code(ostream &s) {
-  //s<<"-----------call----------"<<endl;
-  if(name==print) {
-    emit_push("%rdi",s);
-    emit_push("%rsi",s);
-    emit_push("%rdx",s);
-    emit_push("%rcx",s);
-    emit_push("%r8",s);
-    emit_push("%r9",s);
-    pushFloatRegister(s, "%xmm0");
-    pushFloatRegister(s, "%xmm1");
-    pushFloatRegister(s, "%xmm2");
-    pushFloatRegister(s, "%xmm3");
-    pushFloatRegister(s, "%xmm4");
-    pushFloatRegister(s, "%xmm5");
-    pushFloatRegister(s, "%xmm6");
-    pushFloatRegister(s, "%xmm7");
+  if (cgen_debug)
+    s<<"-----------call----------"<<endl;
 
-    int fNum=0;
-    int notFNum=0;
+  emit_push("%rdi",s);
+  emit_push("%rsi",s);
+  emit_push("%rdx",s);
+  emit_push("%rcx",s);
+  emit_push("%r8",s);
+  emit_push("%r9",s);
+  pushFloatRegister(s, "%xmm0");
+  pushFloatRegister(s, "%xmm1");
+  pushFloatRegister(s, "%xmm2");
+  pushFloatRegister(s, "%xmm3");
+  // pushFloatRegister(s, "%xmm4");
+  // pushFloatRegister(s, "%xmm5");
+  // pushFloatRegister(s, "%xmm6");
+  // pushFloatRegister(s, "%xmm7");
 
-    for(int i = actuals->first(); actuals->more(i); i = actuals->next(i)) {
-      //s << "actual("<<i<<")"<<endl;
-      //s << "type: " << actuals->nth(i)->getType() << endl<<endl;
-      actuals->nth(i)->code(s);
-      if(actuals->nth(i)->getType()==Float) {
-        switch (fNum)
-        {
-        case 0:
-          emit_mov("%xmm8","%xmm0",s);
-          fNum++;
-          break;
+  int fNum=0;
+  int notFNum=0;
 
-        case 1:
-          emit_mov("%xmm8","%xmm1",s);
-          fNum++;
-          break;
-        
-        case 2:
-          emit_mov("%xmm8","%xmm2",s);
-          fNum++;
-          break;
-        
-        case 3:
-          emit_mov("%xmm8","%xmm3",s);
-          fNum++;
-          break;
-        
-        case 4:
-          emit_mov("%xmm8","%xmm4",s);
-          fNum++;
-          break;
-        
-        case 5:
-          emit_mov("%xmm8","%xmm5",s);
-          fNum++;
-          break;
+  for(int i = actuals->first(); actuals->more(i); i = actuals->next(i)) {
+    // if (cgen_debug) s << "actual("<<i<<")"<<endl;
+    // if (cgen_debug) s << "type: " << actuals->nth(i)->getType() << endl<<endl;
+    actuals->nth(i)->code(s);
 
-        case 6:
-          emit_mov("%xmm8","%xmm6",s);
-          fNum++;
-          break;
-        
-        case 7:
-          emit_mov("%xmm8","%xmm7",s);
-          fNum++;
-          break;
+    // if(actuals->nth(i)->getType()==Float){
+    //   fNum++;
+    //   emit_sub("$8","%rsp",s);
+    //   emit_mov("%xmm8",generateParam(0,"%rsp"),s);
+    // }
+    if(actuals->nth(i)->getType()==Float) {
+      switch (fNum)
+      { 
+      case 0:
+        emit_mov("%xmm8","%xmm0",s);
+        fNum++;
+        break;
+      case 1:
+        emit_mov("%xmm8","%xmm1",s);
+        fNum++;
+        break;
+      case 2:
+        emit_mov("%xmm8","%xmm2",s);
+        fNum++;
+        break;
+      case 3:
+        emit_mov("%xmm8","%xmm3",s);
+        fNum++;
+        break;
+      // case 4:
+      //   emit_mov("%xmm8","%xmm4",s);
+      //   fNum++;
+      //   break;
+      // case 5:
+      //   emit_mov("%xmm8","%xmm5",s);
+      //   fNum++;
+      //   break;
+      // case 6:
+      //   emit_mov("%xmm8","%xmm6",s);
+      //   fNum++;
+      //   break;
+      // case 7:
+      //   emit_mov("%xmm8","%xmm7",s);
+      //   fNum++;
+      //   break;
+      default:
+        emit_sub("$8","%rsp",s);
+        emit_mov("%xmm8",generateParam(0,"%rsp"),s);
+        fNum++;
+        break;
+      }
+    } 
+    else 
+    {switch (notFNum){
+      case 0:
+        emit_mov("%rax","%rdi",s);
+        notFNum++;
+        break;
 
-        default:
-          emit_sub("$8","%rsp",s);
-          emit_mov("%xmm8",generateParam(0,"%rsp"),s);
-          fNum++;
-          break;
-        }
-      } else {
-        switch (notFNum)
-        {
-        case 0:
-          emit_mov("%rax","%rdi",s);
-          notFNum++;
-          break;
+      case 1:
+        emit_mov("%rax","%rsi",s);
+        notFNum++;
+        break;
+      
+      case 2:
+        emit_mov("%rax","%rdx",s);
+        notFNum++;
+        break;
+      
+      case 3:
+        emit_mov("%rax","%rcx",s);
+        notFNum++;
+        break;
+      
+      case 4:
+        emit_mov("%rax","%r8",s);
+        notFNum++;
+        break;
+      
+      case 5:
+        emit_mov("%rax","%r9",s);
+        notFNum++;
+        break;
 
-        case 1:
-          emit_mov("%rax","%rsi",s);
-          notFNum++;
-          break;
-        
-        case 2:
-          emit_mov("%rax","%rdx",s);
-          notFNum++;
-          break;
-        
-        case 3:
-          emit_mov("%rax","%rcx",s);
-          notFNum++;
-          break;
-        
-        case 4:
-          emit_mov("%rax","%r8",s);
-          notFNum++;
-          break;
-        
-        case 5:
-          emit_mov("%rax","%r9",s);
-          notFNum++;
-          break;
-
-        default:
-          emit_sub("$8","%rsp",s);
-          emit_mov("%rax",generateParam(0,"%rsp"),s);
-          notFNum++;
-          break;
-        }
+      default:
+        emit_sub("$8","%rsp",s);
+        emit_mov("%rax",generateParam(0,"%rsp"),s);
+        notFNum++;
+        break;
       }
     }
+  }
 
+  if(name==print){
     if(flag) emit_sub("$8","%rsp",s);
     if(fNum) {
       emit_irmovl(generateInt(fNum), EAX, s);
-    } else {
+    } 
+    else {
       emit_irmovl("0", EAX, s);
     } 
-    emit_call(name->get_string(),s);
+  }
+
+  emit_call(name->get_string(),s);
+
+  if(name==print){
     if(flag) emit_add("$8","%rsp",s);
-
-
-    popFloatRegister(s, "%xmm7");
-    popFloatRegister(s, "%xmm6");
-    popFloatRegister(s, "%xmm5");
-    popFloatRegister(s, "%xmm4");
-    popFloatRegister(s, "%xmm3");
-    popFloatRegister(s, "%xmm2");
-    popFloatRegister(s, "%xmm1");
-    popFloatRegister(s, "%xmm0");
-    emit_pop("%r9",s);
-    emit_pop("%r8",s);
-    emit_pop("%rcx",s);
-    emit_pop("%rdx",s);
-    emit_pop("%rsi",s);
-    emit_pop("%rdi",s);
-  } else {
-    emit_push("%rdi",s);
-    emit_push("%rsi",s);
-    emit_push("%rdx",s);
-    emit_push("%rcx",s);
-    emit_push("%r8",s);
-    emit_push("%r9",s);
-    pushFloatRegister(s, "%xmm0");
-    pushFloatRegister(s, "%xmm1");
-    pushFloatRegister(s, "%xmm2");
-    pushFloatRegister(s, "%xmm3");
-    pushFloatRegister(s, "%xmm4");
-    pushFloatRegister(s, "%xmm5");
-    pushFloatRegister(s, "%xmm6");
-    pushFloatRegister(s, "%xmm7");
-
-    int fNum=0;
-    int notFNum=0;
-
-    for(int i = actuals->first(); actuals->more(i); i = actuals->next(i)) {
-      // s << "actual("<<i<<")"<<endl;
-      // s << "type: " << actuals->nth(i)->getType() << endl<<endl;
-      actuals->nth(i)->code(s);
-      if(actuals->nth(i)->getType()==Float) {
-        switch (fNum)
-        {
-        case 0:
-          emit_mov("%xmm8","%xmm0",s);
-          fNum++;
-          break;
-
-        case 1:
-          emit_mov("%xmm8","%xmm1",s);
-          fNum++;
-          break;
-        
-        case 2:
-          emit_mov("%xmm8","%xmm2",s);
-          fNum++;
-          break;
-        
-        case 3:
-          emit_mov("%xmm8","%xmm3",s);
-          fNum++;
-          break;
-        
-        case 4:
-          emit_mov("%xmm8","%xmm4",s);
-          fNum++;
-          break;
-        
-        case 5:
-          emit_mov("%xmm8","%xmm5",s);
-          fNum++;
-          break;
-
-        case 6:
-          emit_mov("%xmm8","%xmm6",s);
-          fNum++;
-          break;
-        
-        case 7:
-          emit_mov("%xmm8","%xmm7",s);
-          fNum++;
-          break;
-
-        default:
-          emit_sub("$8","%rsp",s);
-          emit_mov("%xmm8",generateParam(0,"%rsp"),s);
-          fNum++;
-          break;
-        }
-      } else {
-        switch (notFNum)
-        {
-        case 0:
-          emit_mov("%rax","%rdi",s);
-          notFNum++;
-          break;
-
-        case 1:
-          emit_mov("%rax","%rsi",s);
-          notFNum++;
-          break;
-        
-        case 2:
-          emit_mov("%rax","%rdx",s);
-          notFNum++;
-          break;
-        
-        case 3:
-          emit_mov("%rax","%rcx",s);
-          notFNum++;
-          break;
-        
-        case 4:
-          emit_mov("%rax","%r8",s);
-          notFNum++;
-          break;
-        
-        case 5:
-          emit_mov("%rax","%r9",s);
-          notFNum++;
-          break;
-
-        default:
-          emit_sub("$8","%rsp",s);
-          emit_mov("%rax",generateParam(0,"%rsp"),s);
-          notFNum++;
-          break;
-        }
-      }
-    }
-
-    emit_call(name->get_string(),s);
-
-
-    popFloatRegister(s, "%xmm7");
-    popFloatRegister(s, "%xmm6");
-    popFloatRegister(s, "%xmm5");
-    popFloatRegister(s, "%xmm4");
-    popFloatRegister(s, "%xmm3");
-    popFloatRegister(s, "%xmm2");
-    popFloatRegister(s, "%xmm1");
-    popFloatRegister(s, "%xmm0");
-    emit_pop("%r9",s);
-    emit_pop("%r8",s);
-    emit_pop("%rcx",s);
-    emit_pop("%rdx",s);
-    emit_pop("%rsi",s);
-    emit_pop("%rdi",s);
   }
   
-  
+  // popFloatRegister(s, "%xmm7");
+  // popFloatRegister(s, "%xmm6");
+  // popFloatRegister(s, "%xmm5");
+  // popFloatRegister(s, "%xmm4");
+  popFloatRegister(s, "%xmm3");
+  popFloatRegister(s, "%xmm2");
+  popFloatRegister(s, "%xmm1");
+  popFloatRegister(s, "%xmm0");
+  emit_pop("%r9",s);
+  emit_pop("%r8",s);
+  emit_pop("%rcx",s);
+  emit_pop("%rdx",s);
+  emit_pop("%rsi",s);
+  emit_pop("%rdi",s);
+
   //
   /*
    if function name is printf
@@ -1399,19 +1063,28 @@ void Call_class::code(ostream &s) {
   }
   */
   //
+
+  if (cgen_debug)
+    s<<"-----------/call----------"<<endl;
+
 }
 
 void Actual_class::code(ostream &s) {
-  // s<<"<actual>"<<endl;
+  if (cgen_debug)
+    s<<"<actual>"<<endl;
   // s<<"<call expr->code(s)>"<<endl;
 
   expr->code(s);
   // s<<"</call expr->code(s)>"<<endl;
-  // s<<"</actual>"<<endl;
+  
+  if (cgen_debug)
+    s<<"</actual>"<<endl;
 }
 
 void Assign_class::code(ostream &s) {
-  //s<<"<assign>"<<endl;
+  if (cgen_debug)
+    s<<"<assign>"<<endl;
+
   value->code(s);
   if(map->lookup(lvalue)->isFloat) {
     if(value->getType()==Int) {
@@ -1431,12 +1104,13 @@ void Assign_class::code(ostream &s) {
   //   emit_movsd
   // }
 
-  //s<<"</assign>"<<endl;
+  if (cgen_debug)
+    s<<"</assign>"<<endl;
+
 }
 
 void Add_class::code(ostream &s) {
-
-  //s<<"<add>"<<endl;
+  if (cgen_debug) s<<"<add>"<<endl;
 
   if(getType()==Float) {
     e2->code(s);
@@ -1463,11 +1137,12 @@ void Add_class::code(ostream &s) {
     emit_add("%rbx","%rax",s);
   }
 
-  //s<<"</add>"<<endl;
+  if (cgen_debug) s<<"</add>"<<endl;
 }
 
 void Minus_class::code(ostream &s) {
-  
+  if (cgen_debug) s<<"<minus>"<<endl;
+
   if(getType()==Float) {
     e2->code(s);
     if(e2->getType()==Int) {
@@ -1492,6 +1167,8 @@ void Minus_class::code(ostream &s) {
     emit_pop("%rbx", s);
     emit_sub("%rbx","%rax",s);
   }
+
+  if (cgen_debug) s<<"</minus>"<<endl;
 
 }
 
@@ -1564,7 +1241,7 @@ void Mod_class::code(ostream &s) {
 }
 
 void Neg_class::code(ostream &s) {
-  s<<"-----------neg----------"<<endl;
+  if (cgen_debug) s<<"<neg>"<<endl;
   if(e1->getType()==Float) {
     e1->code(s);
     emit_mov("%xmm8","%xmm9",s);
@@ -1576,10 +1253,14 @@ void Neg_class::code(ostream &s) {
     emit_not("%rax",s);
     emit_add("$1","%rax",s);
   }
+
+  if (cgen_debug) s<<"</neg>"<<endl;
 }
 
 // e1 < e2
 void Lt_class::code(ostream &s) {
+  if (cgen_debug) s<<"<lt>"<<endl;
+
   bool hasFloat = (e1->getType()==Float)||(e2->getType()==Float);
   if(hasFloat) {
     e2->code(s);
@@ -1609,12 +1290,18 @@ void Lt_class::code(ostream &s) {
     emit_xor("%r13","%r13",s);
     emit_cmp("%rax","%rbx",s);
     emit_setg("%r13b",s);
+    // emit_setge("%r13b",s);
     emit_mov("%r13","%rax",s);
   }
+
+  if (cgen_debug) s<<"</lt>"<<endl;
+
 }
 
 // e1 <= e2
 void Le_class::code(ostream &s) {
+  if (cgen_debug) s<<"<le>"<<endl;
+
   bool hasFloat = (e1->getType()==Float)||(e2->getType()==Float);
   if(hasFloat) {
     e2->code(s);
@@ -1645,7 +1332,10 @@ void Le_class::code(ostream &s) {
     emit_cmp("%rax","%rbx",s);
     emit_setge("%r13b",s);
     emit_mov("%r13","%rax",s);
+    // emit_cmp("%rbx","%rax",s);
   }
+
+  if (cgen_debug) s<<"</le>"<<endl;
 }
 
 // e1 == e2
@@ -1841,34 +1531,53 @@ void Bitor_class::code(ostream &s) {
   emit_or("%rbx","%rax", s);
 }
 
+
 void Const_int_class::code(ostream &s) {
-  //s<<"<int const>"<<endl;
-  emit_mov(getImmediateInt(value->get_string()),"%rax", s);
-  //s<<"</int const>"<<endl;
+  if (cgen_debug) s<<"<int const>"<<endl;
+
+  s<< MOV << "$" << value->get_string()<< COMMA <<RAX<<endl;
+
+  if (cgen_debug) s<<"</int const>"<<endl;
 }
 
 void Const_string_class::code(ostream &s) {
-  strMap->addid(StringNum,value->get_string());
-  //s << "the string is "<<value->get_string()<<endl;
-  emit_irmov(generateStringAdd(StringNum),"%rax",s);
-  StringNum++;
+  s<< MOV;
+  stringtable.lookup_string(value->get_string())->code_ref(s);
+  s<< COMMA << RAX << endl;
+}
+
+
+static char* getImmediateFloat(char* str) {
+  double x = stof(str);
+  long long unsigned k = *(long*)(&x);
+  char*buf = new char(19);
+  buf[0]='$';
+  sprintf(buf+1, "0x%llx", k);
+  return buf;
 }
 
 void Const_float_class::code(ostream &s) {
-  //s<<"<float const>"<<endl;
-  emit_mov(getImmediateFloat(value->get_string()),"%rax",s);
-  emit_xorpd("%xmm8", "%xmm8", s);
-  emit_mov("%rax","%xmm8",s);
-  //s<<"</float const>"<<endl;
+  if (cgen_debug) s<<"<float const>"<<endl;
+
+  emit_mov(getImmediateFloat(value->get_string()),RAX,s);
+  emit_xorpd(XMM8, XMM8, s);
+  emit_mov(RAX,XMM8,s);
+
+  if (cgen_debug) s<<"</float const>"<<endl;
 }
 
 void Const_bool_class::code(ostream &s) {
-  if(value) {
-    emit_mov("$1","%rax",s);
-  } else emit_xor("%rax","%rax",s);
+  if (cgen_debug) s<<"<bool const>"<<endl;
+
+  if(value) emit_mov("$1",RAX,s);
+  else emit_xor(RAX,RAX,s); 
+
+  if (cgen_debug) s<<"</bool const>"<<endl;
 }
 
 void Object_class::code(ostream &s) {
+  if (cgen_debug) s<<"<object>"<<endl;
+
   if(getType()==Float) {
     if(inReg()) {
       emit_movsd(map->lookup(var)->add,generateParam(-8,"%rsp"),s);
@@ -1879,11 +1588,10 @@ void Object_class::code(ostream &s) {
       emit_xorpd("%xmm8", "%xmm8", s);
       emit_mov(generateParam(-8,"%rsp"),"%xmm8",s);
     }
-  } else {
-    emit_mov(map->lookup(var)->add,"%rax",s);
-  }
+  } 
+  else emit_mov(map->lookup(var)->add,RAX,s);
   
-  //s<<"</object>"<<endl;
+  if (cgen_debug) s<<"</object>"<<endl;
 }
 
 void No_expr_class::code(ostream& s) {

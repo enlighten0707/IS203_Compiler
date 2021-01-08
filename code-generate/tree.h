@@ -61,9 +61,9 @@ public:
     int get_line_number();
     tree_node *set(tree_node *);
     static SymbolTable<Symbol ,AddAndType> *map;
-    static SymbolTable<int ,char> *strMap;
+    // static SymbolTable<int ,char> *strMap;
     static int rspAdd;
-    static int StringNum;
+    // static int StringNum;
     static int jumpNum;
     static bool flag;
     static int varNum;

@@ -1,7 +1,7 @@
 # start of generated code
 	.text	
 tan:
-	.global	tan
+	.globl	tan
 	.type	tan, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -53,7 +53,7 @@ tan:
 	addq	%r15, %rsp
 	.size	tan, .-tan
 main:
-	.global	main
+	.globl	main
 	.type	main, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -102,14 +102,6 @@ main:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm4, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm5, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm6, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm7, (%rsp)
 	movq	$.LC0, %rax
 	movq	%rax, %rdi
 	pushq	 %rdi
@@ -126,14 +118,6 @@ main:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm4, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm5, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm6, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm7, (%rsp)
 	movq	-48(%rbp), %r12
 	movq	%r12, -8(%rsp)
 	xorpd	%xmm8, %xmm8
@@ -155,14 +139,6 @@ main:
 	movq	-8(%rsp), %xmm8
 	movq	%xmm8, %xmm3
 	call	 tan
-	movsd	(%rsp), %xmm7
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm6
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm5
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm4
-	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2
@@ -180,14 +156,6 @@ main:
 	movq	%xmm8, %xmm0
 	movl	$1, %eax
 	call	 printf
-	movsd	(%rsp), %xmm7
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm6
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm5
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm4
-	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2

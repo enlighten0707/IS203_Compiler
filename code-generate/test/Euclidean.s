@@ -1,7 +1,7 @@
 # start of generated code
 	.text	
 euclidean:
-	.global	euclidean
+	.globl	euclidean
 	.type	euclidean, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -90,7 +90,7 @@ euclidean:
 	addq	%r15, %rsp
 	.size	euclidean, .-euclidean
 main:
-	.global	main
+	.globl	main
 	.type	main, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -123,14 +123,6 @@ main:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm4, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm5, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm6, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm7, (%rsp)
 	movq	$.LC0, %rax
 	movq	%rax, %rdi
 	pushq	 %rdi
@@ -147,27 +139,11 @@ main:
 	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
 	movsd	%xmm3, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm4, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm5, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm6, (%rsp)
-	subq	$8, %rsp
-	movsd	%xmm7, (%rsp)
 	movq	-48(%rbp), %rax
 	movq	%rax, %rdi
 	movq	-56(%rbp), %rax
 	movq	%rax, %rsi
 	call	 euclidean
-	movsd	(%rsp), %xmm7
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm6
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm5
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm4
-	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2
@@ -185,14 +161,6 @@ main:
 	movq	%rax, %rsi
 	movl	$0, %eax
 	call	 printf
-	movsd	(%rsp), %xmm7
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm6
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm5
-	addq	$8, %rsp
-	movsd	(%rsp), %xmm4
-	addq	$8, %rsp
 	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm2
