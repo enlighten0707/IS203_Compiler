@@ -30,7 +30,7 @@ ind:
 	setne	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	 .POS1
+	je	   .POS1
 	xorq	%r15, %r15
 	pushq	 %r15
 	movq	%rsi, %rax
@@ -53,7 +53,7 @@ ind:
 	movq	%rax, -48(%rbp)
 	popq	 %r15
 	addq	%r15, %rsp
-	jmp	 .POS0
+	jmp	   .POS0
 .POS1:
 	movq	-48(%rbp), %rax
 	popq	 %r15
@@ -94,7 +94,7 @@ main:
 	setg	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	 .POS3
+	je	   .POS3
 	xorq	%r15, %r15
 	pushq	 %r15
 	pushq	 %rdi
@@ -206,7 +206,7 @@ main:
 	popq	 %rbx
 	addq	%rbx, %rax
 	movq	%rax, -48(%rbp)
-	jmp	 .POS2
+	jmp	   .POS2
 .POS3:
 	movq	$1, %rax
 	popq	 %r15

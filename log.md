@@ -173,3 +173,11 @@ func main() Void{
 }
 
 ```
+
+## Code-Generate
+- [ ] 函数参数多于6/8个的逻辑，有问题
+- [ ] 测试跳转：break, continue
+- [ ] object_table中的AddAndType改一下
+- [ ] flag?
+- [ ] generateParam
+- [ ] 全局变量

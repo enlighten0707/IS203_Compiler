@@ -13,107 +13,32 @@ using namespace std;
 
 extern void emit_string_constant(ostream& str, char *s);
 extern int cgen_debug;
-extern SymbolTable<Symbol ,char> *map;
 
 static char *CALL_REGS[] = {RDI, RSI, RDX, RCX, R8, R9};
 static char *CALL_XMM[] = {XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7};
+static char *CALLEE_REGS[] = {RBP, RBX, R12, R13, R14, R15};
 
 void cgen_helper(Decls decls, ostream& s);
 void code(Decls decls, ostream& s);
 
-//////////////////////////////////////////////////////////////////
-//
-//
-//    Helper Functions
-//  
-//
-//////////////////////////////////////////////////////////////////
+int pos_index;
+int stmtBlock_level;
+int rsp_offset;
 
-// you can add any helper functions here
+struct Jump_Stmt {
+  int pos_goto;
+  int level;
+};
 
-static char* generateJumpFlag(int n) {
-  int num;
-  int k = n;
-  if(n==0) {
-    num =1;
-  } else {
-    num=0;
-    while (n!=0) {
-      n/=10;
-      num++;
-    }
-  }
-  char *buf = new char(4+num);
-  buf[0]='.';
-  buf[1]='P';
-  buf[2]='O';
-  buf[3]='S';
-  for(int i=num+3;i>=4;i--) {
-    buf[i]=(k%10)+48;
-    k/=10;
-  }
-  return buf;
-}
-//////////////////////////////////////////////////////////////////////
-//
-// Symbols
-//
-// For convenience, a large number of symbols are predefined here.
-// These symbols include the primitive type and method names, as well
-// as fixed names used by the runtime system.
-//
-//////////////////////////////////////////////////////////////////////
-Symbol 
-    Int,
-    Float,
-    String,
-    Bool,
-    Void,
-    Main,
-    print
-    ;
-//
-// Initializing the predefined symbols.
-//
-static void initialize_constants(void)
-{
-    // 4 basic types and Void type
-    Bool        = idtable.add_string("Bool");
-    Int         = idtable.add_string("Int");
-    String      = idtable.add_string("String");
-    Float       = idtable.add_string("Float");
-    Void        = idtable.add_string("Void");  
-    // main function
-    Main        = idtable.add_string("main");
+struct AddAndType {
+  char* add;
+  bool isFloat;
+  bool inRegister;
+};
 
-    // classical function to print things, so defined here for call.
-    print        = idtable.add_string("printf");
-}
-
-
-//*********************************************************
-//
-// Define method for code generation
-//
-//
-//*********************************************************
-
-
-void Program_class::cgen(ostream &os) 
-{
-
-  cgen_debug=0;
-  // cgen_debug=1;
-
-  // spim wants comments to start with '#'
-  os << "# start of generated code\n";
-  initialize_constants();
-  cgen_helper(decls,os);
-  os << "\t.section\t.rodata"<<endl;
-  stringtable.code_string_table(os);
-  os << "\n# end of generated code\n";
-}
-
+SymbolTable<int, Jump_Stmt> *break_table;
+SymbolTable<int, Jump_Stmt> *continue_table;
+SymbolTable<Symbol ,AddAndType> *object_table;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -133,19 +58,6 @@ static void emit_mov(const char *source, const char *dest, ostream& s)
 {
   s << MOV << source << COMMA << dest << endl;
 }
-
-static void emit_irmov(const char *immidiate, const char *dest_reg, ostream& s)
-{
-  s << MOV << "$" << immidiate << COMMA << dest_reg  
-      << endl;
-}
-
-static void emit_irmovl(const char *immidiate, const char *dest_reg, ostream& s)
-{
-  s << MOVL << "$" << immidiate << COMMA << dest_reg  
-      << endl;
-}
-
 
 static void emit_add(const char *source_reg, const char *dest_reg, ostream& s)
 {
@@ -195,11 +107,6 @@ static void emit_not(const char *dest_reg, ostream& s)
 static void emit_movsd(const char *source, const char *dest, ostream& s)
 {
   s << MOVSD << source << COMMA << dest << endl;
-}
-
-static void emit_movaps(const char *source, const char *dest, ostream& s)
-{
-  s << MOVAPS << source << COMMA << dest << endl;
 }
 
 static void emit_addsd(const char *source_reg, const char *dest_reg, ostream& s)
@@ -336,11 +243,6 @@ static void emit_leave(ostream& s)
   s << LEAVE << endl;
 }
 
-static void emit_position(const char *p, ostream& s)
-{
-  s << p << ":" << endl;
-}
-
 static void emit_float_to_int(const char *float_mmx, const char *int_reg, ostream& s)
 {
   s << CVTTSD2SIQ << float_mmx << COMMA << int_reg << endl;
@@ -374,6 +276,74 @@ static void emit_setl(const char * reg, ostream &s) {
 static void emit_setle(const char * reg, ostream &s) {
   s << "\tsetle\t" << reg <<endl;
 }
+
+//////////////////////////////////////////////////////////////////////
+//
+// Symbols
+//
+// For convenience, a large number of symbols are predefined here.
+// These symbols include the primitive type and method names, as well
+// as fixed names used by the runtime system.
+//
+//////////////////////////////////////////////////////////////////////
+Symbol 
+    Int,
+    Float,
+    String,
+    Bool,
+    Void,
+    Main,
+    print
+    ;
+//
+// Initializing the predefined symbols.
+//
+static void initialize_constants(void)
+{
+    //idtable
+    Bool        = idtable.add_string("Bool");
+    Int         = idtable.add_string("Int");
+    String      = idtable.add_string("String");
+    Float       = idtable.add_string("Float");
+    Void        = idtable.add_string("Void");  
+    Main        = idtable.add_string("main");
+    print        = idtable.add_string("printf");
+
+    //other constants
+    pos_index=0;
+    stmtBlock_level=0;
+    rsp_offset=0;
+
+    //other tables
+    break_table = new SymbolTable<int,Jump_Stmt>();
+    continue_table = new SymbolTable<int,Jump_Stmt>();
+    object_table = new SymbolTable<Symbol,AddAndType>();
+}
+
+
+//*********************************************************
+//
+// Define method for code generation
+//
+//
+//*********************************************************
+
+
+void Program_class::cgen(ostream &os) 
+{
+
+  cgen_debug=0;
+  // cgen_debug=1;
+
+  // spim wants comments to start with '#'
+  os << "# start of generated code\n";
+  initialize_constants();
+  cgen_helper(decls,os);
+  os << "\t.section\t.rodata"<<endl;
+  stringtable.code_string_table(os);
+  os << "\n# end of generated code\n";
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // coding strings, ints, and booleans
@@ -415,17 +385,6 @@ void StrTable::code_string_table(ostream& s)
     l->hd()->code_def(s);
 }
 
-// the following 2 functions are useless, please DO NOT care about them
-// void FloatEntry::code_ref(ostream &s)
-// {
-//   s << FLOATTAG << index;
-// }
-
-// void IntEntry::code_def(ostream &s)
-// {
-//   s << GLOBAL;
-// }
-
 //***************************************************
 //
 //  Emit global var and functions.
@@ -460,17 +419,6 @@ static void emit_global_bool(Symbol name, ostream& s) {
   BOOLTAG << 0 << endl;
 }
 
-// void code_global_data(Decls decls, ostream &str)
-// {
-//   // decls->dump(str, 0);
-// }
-
-// void code_calls(Decls decls, ostream &str) {
-//   // for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
-//   //   decls->nth(i)->code(str);
-//   // }
-// }
-
 //***************************************************
 //
 //  Emit code to start the .text segment and to
@@ -497,12 +445,6 @@ void code(Decls decls, ostream& s)
   for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
     decls->nth(i)->code(s);
   }
-
-  // if (cgen_debug) s << "Coding calls" << endl;
-  // code_calls(decls, s);
-
-  // if (cgen_debug) s << "Coding global data" << endl;
-  // code_global_data(decls, s);
 }
 
 
@@ -582,24 +524,21 @@ char* generateParam(int n, char* str) {
 
 
 void CallDecl_class::code(ostream &s) {
-  map->enterscope();
+  object_table->enterscope();
   
   s << name->get_string() << ":" << endl;
   s << GLOBAL << name->get_string() << endl;
-  s << SYMBOL_TYPE <<name->get_string() << COMMA << "@function" <<endl;
+  s << SYMBOL_TYPE <<name->get_string() << COMMA << FUNCTION <<endl;
   
   emit_push(RBP, s);
   emit_mov(RSP, RBP, s);
-  emit_push(RBX, s);
-  emit_push(R12, s);
-  emit_push(R13, s);
-  emit_push(R14, s);
-  emit_push(R15, s);
-  rspAdd=-40;
+  for(int i=1;i<6;++i)
+    emit_push(CALLEE_REGS[i], s);
+  
+  rsp_offset=-40;
 
   int number_i = 0;
   int number_f = 0;
-
   int paraNumInStack = 0;
 
   for(int i = paras->first(),j=0,k=0;paras->more(i); i = paras->next(i)) {
@@ -628,13 +567,13 @@ void CallDecl_class::code(ostream &s) {
       if(number_f<8){
         object->add=CALL_XMM[number_f];
         object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
+        object_table->addid(paras->nth(i)->getName(),object);
         number_f++;
       }
       else{
         object->inRegister=0;
         object->add=generateParam(16+(paraNumInStack-index)*8,RBP);
-        map->addid(paras->nth(i)->getName(),object);
+        object_table->addid(paras->nth(i)->getName(),object);
         index++;
       }
     } 
@@ -643,34 +582,33 @@ void CallDecl_class::code(ostream &s) {
       if (number_i<6){
         object->add=CALL_REGS[number_i];
         object->inRegister=1;
-        map->addid(paras->nth(i)->getName(),object);
+        object_table->addid(paras->nth(i)->getName(),object);
         number_i++;
       }
       else{
         object->inRegister=0;
         object->add=generateParam(16+(paraNumInStack-index)*8,RBP);
-        map->addid(paras->nth(i)->getName(),object);
+        object_table->addid(paras->nth(i)->getName(),object);
         index++;
       }
     }
   }
-  stmtIndex=0;
+  stmtBlock_level=0;
   body->code(s);
   s << SIZE << name->get_string()<<", .-"<< name->get_string()<<endl;
-  map->exitscope();
+  object_table->exitscope();
 }
 
 void StmtBlock_class::code(ostream &s) {
   if (cgen_debug) s << "-----StmtBlock-----" <<endl;
 
-  if(breakPoint->lookup(1)!=NULL) {
-    breakPoint->lookup(1)->stmtNum++;
-  }
-  if(continuePoint->lookup(1)!=NULL) {
-    continuePoint->lookup(1)->stmtNum++;
-  }
-  map->enterscope();
-  stmtIndex++;
+  if(break_table->lookup(1)) 
+    break_table->lookup(1)->level++;
+  if(continue_table->lookup(1)!=NULL)
+    continue_table->lookup(1)->level++;
+
+  object_table->enterscope();
+  stmtBlock_level++;
 
   emit_xor(R15,R15,s);
 
@@ -682,21 +620,21 @@ void StmtBlock_class::code(ostream &s) {
   }
   
   emit_push(R15,s);
-  rspAdd-=8;
+  rsp_offset-=8;
   for(int i = stmts->first(); stmts->more(i); i = stmts->next(i))
     stmts->nth(i)->code(s);
 
   emit_pop(R15,s);
   emit_add(R15,RSP,s);
 
-  stmtIndex--;
-  if(breakPoint->lookup(1)!=NULL) {
-    breakPoint->lookup(1)->stmtNum--;
+  stmtBlock_level--;
+  if(break_table->lookup(1)!=NULL) {
+    break_table->lookup(1)->level--;
   }
-  if(continuePoint->lookup(1)!=NULL) {
-    continuePoint->lookup(1)->stmtNum--;
+  if(continue_table->lookup(1)!=NULL) {
+    continue_table->lookup(1)->level--;
   }
-  map->exitscope();
+  object_table->exitscope();
 
   if (cgen_debug) s << "-----/StmtBlock-----" <<endl;
 }
@@ -706,16 +644,16 @@ void VariableDecl_class::code(ostream &s) {
 
   AddAndType* object = new AddAndType();
   emit_sub("$8", RSP, s);
-  rspAdd-=8;
+  rsp_offset-=8;
   object->inRegister=0;
-  object->add = generateParam(rspAdd,RBP);
+  object->add = generateParam(rsp_offset,RBP);
   object->isFloat = getType()->isFloat();
 
   if(cgen_debug) s << "<add var \t"<<variable->getName() << "\t"<< object->add << ">" << endl;
   
-  map->addid(variable->getName(),object);
+  object_table->addid(variable->getName(),object);
 
-  if (cgen_debug) s<<"<the location of "<<variable->getName()<<" is "<<map->lookup(variable->getName())->add << ">"<<endl;
+  if (cgen_debug) s<<"<the location of "<<variable->getName()<<" is "<<object_table->lookup(variable->getName())->add << ">"<<endl;
   
   if (cgen_debug) s << "-----/VariableDecl-----" <<endl;
 }
@@ -726,148 +664,150 @@ void IfStmt_class::code(ostream &s) {
   condition->code(s);
 
   emit_test(RAX,RAX,s);
-  int n = jumpNum;
-  jumpNum++;
-  s << JE << "    " << POSITION << to_string(n) << endl;
+  int pos_else = pos_index;
+  pos_index++;
+  s << JE << "    " << POSITION << to_string(pos_else) << endl;
 
   thenexpr->code(s);
-  int k = jumpNum;
-  jumpNum++;
-  s << JMP << "   " << POSITION << to_string(k) << endl;
+  int pos_next = pos_index;
+  pos_index++;
+  s << JMP << "   " << POSITION << to_string(pos_next) << endl;
 
-  s << POSITION << to_string(n) <<":" <<endl;
+  s << POSITION << to_string(pos_else) <<":" <<endl;
   elseexpr->code(s);
 
-  s << POSITION << to_string(k) <<":" <<endl;
+  s << POSITION << to_string(pos_next) <<":" <<endl;
 
   if (cgen_debug) s<<"-----------/if----------"<<endl;
 }
 
 void WhileStmt_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------while----------"<<endl;
+  if (cgen_debug) s<<"-----------while----------"<<endl;
 
-  breakPoint->enterscope();
-  int n = jumpNum;
-  jumpNum++;
-  s << generateJumpFlag(n) <<":" <<endl;
+  break_table->enterscope();
+
+  int pos_condition = pos_index;
+  pos_index++;
+  s << POSITION << to_string(pos_condition) <<":" <<endl;
+  if(cgen_debug) s<<"<while-condition>"<<endl;
   condition->code(s);
-  emit_test("%rax","%rax",s);
-  int k = jumpNum;
-  jumpNum++;
-  Help *object = new Help();
-  object->flag=k;
-  object->stmtNum=0;
-  breakPoint->addid(1,object);
-  emit_je(generateJumpFlag(k),s);
-  body->code(s);
-  emit_jmp(generateJumpFlag(n),s);
-  s << generateJumpFlag(k) <<":" <<endl;
-  breakPoint->exitscope();
+  if(cgen_debug) s<<"</while-condition>"<<endl;
 
-  if (cgen_debug)
-    s<<"-----------/while----------"<<endl;
+  emit_test(RAX,RAX,s);
+  int pos_next = pos_index;
+  pos_index++;
+  Jump_Stmt *p = new Jump_Stmt();
+  p->pos_goto=pos_next;
+  p->level=0;
+  break_table->addid(1,p);
+  s << JE << "   " << POSITION << to_string(pos_next) << endl;
+
+  if(cgen_debug) s<<"<while-body>"<<endl;
+  body->code(s);
+  if(cgen_debug) s<<"</while-body>"<<endl;
+  s << JMP << "   " << POSITION << to_string(pos_condition) << endl;
+
+  s << POSITION << to_string(pos_next) <<":" <<endl;
+
+  break_table->exitscope();
+
+  if (cgen_debug) s<<"-----------/while----------"<<endl;
 }
 
 void ForStmt_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------for----------"<<endl;
+  if (cgen_debug) s<<"-----------for----------"<<endl;
 
   if(cgen_debug) s<<"<for-initexpr>"<<endl;
   initexpr->code(s);
   if(cgen_debug) s<<"</for-initexpr>"<<endl;
 
-  breakPoint->enterscope();
-  continuePoint->enterscope();
-  int n = jumpNum;
-  jumpNum++;
-  s << generateJumpFlag(n) <<":" <<endl;
+  break_table->enterscope();
+  continue_table->enterscope();
 
+  int pos_condition = pos_index;
+  pos_index++;
+  s << POSITION << to_string(pos_condition) <<":" <<endl;
   if(cgen_debug) s<<"<for-condition>"<<endl;
   condition->code(s);
   if(cgen_debug) s<<"</for-condition>"<<endl;
 
-  emit_test("%rax","%rax",s);
-  int k = jumpNum;
-  Help *breakObject = new Help();
-  breakObject->flag=k;
-  breakObject->stmtNum=0;
-  breakPoint->addid(1,breakObject);
-  jumpNum++;
-  emit_je(generateJumpFlag(k),s);
-  int j = jumpNum;
-  jumpNum++;
-  Help *continueObject = new Help();
-  continueObject->flag=j;
-  continueObject->stmtNum=0;
-  continuePoint->addid(1,continueObject);
+  emit_test(RAX,RAX,s);
+  int pos_next = pos_index;
+  Jump_Stmt *p = new Jump_Stmt();
+  p->pos_goto=pos_next;
+  p->level=0;
+  break_table->addid(1,p);
+  pos_index++;
+  s << JE << "   " << POSITION << to_string(pos_next) << endl;
+
+  int pos_loopact = pos_index;
+  pos_index++;
+  Jump_Stmt *q = new Jump_Stmt();
+  q->pos_goto=pos_loopact;
+  q->level=0;
+  continue_table->addid(1,q);
+  if(cgen_debug) s<<"<for-body>"<<endl;
   body->code(s);
-  s << generateJumpFlag(j) <<":" <<endl;
+  if(cgen_debug) s<<"</for-body>"<<endl;
+
+  s << POSITION << to_string(pos_loopact) <<":" <<endl;
   loopact->code(s);
-  emit_jmp(generateJumpFlag(n),s);
-  s << generateJumpFlag(k) <<":" <<endl;
-  breakPoint->exitscope();
-  continuePoint->exitscope();
+  s << JMP << "   " << POSITION << to_string(pos_condition) << endl;
 
-  if (cgen_debug)
-    s<<"-----------/for----------"<<endl;
+  s << POSITION << to_string(pos_next)  <<":" <<endl;
 
+  break_table->exitscope();
+  continue_table->exitscope();
+
+  if (cgen_debug) s<<"-----------/for----------"<<endl;
 }
 
 void ReturnStmt_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------return----------"<<endl;
+  if (cgen_debug) s<<"-----------return----------"<<endl;
 
   value->code(s);
   if(value->isFloat()) {
-    emit_xorpd("%xmm0", "%xmm0", s);
-    emit_mov("%rax", "%xmm0", s);
+    emit_xorpd(XMM0, XMM0, s);
+    emit_mov(RAX, XMM0, s);
   }
-  // s<< "----------------释放callee-saved-registers------------------"<<endl;
-  int k = stmtIndex;
-  while(k!=0) {
-    emit_pop("%r15",s);
-    emit_add("%r15","%rsp",s);
+
+  int k = stmtBlock_level;
+  while(k) {
+    emit_pop(R15,s);
+    emit_add(R15,RSP,s);
     k--;
   }
-  emit_pop("%r15", s);
-  emit_pop("%r14", s);
-  emit_pop("%r13", s);
-  emit_pop("%r12", s);
-  emit_pop("%rbx", s);
-  emit_pop("%rbp", s);
+
+  for (int i=5;i>=0;--i) emit_pop(CALLEE_REGS[i], s);
   emit_ret(s);
 
-  if (cgen_debug)
-    s<<"-----------/return----------"<<endl;
-
+  if (cgen_debug) s<<"-----------/return----------"<<endl;
 }
 
 void ContinueStmt_class::code(ostream &s) {
-  if (cgen_debug)
-    s<<"-----------continue----------"<<endl;
-  int k = continuePoint->lookup(1)->stmtNum;
+  if (cgen_debug) s<<"-----------continue----------"<<endl;
+
+  int k = continue_table->lookup(1)->level;
   while(k!=0) {
-    emit_pop("%r15",s);
-    emit_add("%r15","%rsp",s);
+    emit_pop(R15,s);
+    emit_add(R15,RSP,s);
     k--;
   }
-  emit_jmp(generateJumpFlag(continuePoint->lookup(1)->flag),s);
+  s << JMP << "  " << POSITION << to_string(continue_table->lookup(1)->pos_goto) << endl;
 
-  if (cgen_debug)
-    s<<"-----------/continue----------"<<endl;
+  if (cgen_debug) s<<"-----------/continue----------"<<endl;
 }
 
 void BreakStmt_class::code(ostream &s) {
   if (cgen_debug) s<<"-----------break----------"<<endl;
 
-  int k = breakPoint->lookup(1)->stmtNum;
+  int k = break_table->lookup(1)->level;
   while(k!=0) {
-    emit_pop("%r15",s);
-    emit_add("%r15","%rsp",s);
+    emit_pop(R15,s);
+    emit_add(R15,RSP,s);
     k--;
   }
-  emit_jmp(generateJumpFlag(breakPoint->lookup(1)->flag),s);
+  s << JMP << "  " << POSITION << to_string(break_table->lookup(1)->pos_goto) << endl;
 
   if (cgen_debug) s<<"-----------/break----------"<<endl;
 }
@@ -945,17 +885,17 @@ void Assign_class::code(ostream &s) {
 
   value->code(s);
 
-  if(map->lookup(lvalue)->isFloat) {
+  if(object_table->lookup(lvalue)->isFloat) {
     if(value->getType()==Int) {
       emit_xorpd(XMM8, XMM8, s);
       emit_int_to_float(RAX, XMM8,s);
     }
-    if(map->lookup(lvalue)->inRegister) 
-      emit_mov(XMM8, map->lookup(lvalue)->add,s);
+    if(object_table->lookup(lvalue)->inRegister) 
+      emit_mov(XMM8, object_table->lookup(lvalue)->add,s);
     else 
-      emit_movsd(XMM8, map->lookup(lvalue)->add,s);
+      emit_movsd(XMM8, object_table->lookup(lvalue)->add,s);
   } 
-  else emit_mov(RAX,map->lookup(lvalue)->add,s);
+  else emit_mov(RAX,object_table->lookup(lvalue)->add,s);
 
   if (cgen_debug) s<<"</assign>"<<endl;
 }
@@ -1473,21 +1413,25 @@ void Object_class::code(ostream &s) {
   if (cgen_debug) s<<"<object>"<<endl;
 
   if(getType()==Float) {
-    if(inReg()) {
-      emit_movsd(map->lookup(var)->add,generateParam(-8,"%rsp"),s);
+    if(object_table->lookup(var)->inRegister) {
+      emit_movsd(object_table->lookup(var)->add,generateParam(-8,"%rsp"),s);
       emit_mov(generateParam(-8,"%rsp"),"%xmm8",s);
     } else {
-      emit_mov(map->lookup(var)->add,"%r12",s);
+      emit_mov(object_table->lookup(var)->add,"%r12",s);
       emit_mov("%r12",generateParam(-8,"%rsp"),s);
       emit_xorpd("%xmm8", "%xmm8", s);
       emit_mov(generateParam(-8,"%rsp"),"%xmm8",s);
     }
   } 
-  else emit_mov(map->lookup(var)->add,RAX,s);
+  else emit_mov(object_table->lookup(var)->add,RAX,s);
   
   if (cgen_debug) s<<"</object>"<<endl;
 }
 
 void No_expr_class::code(ostream& s) {
-  emit_mov("$1","%rax",s);
+  if (cgen_debug) s<<"<no_expr>"<<endl;
+
+  emit_mov("$1",RAX,s);
+
+  if (cgen_debug) s<<"</no_expr>"<<endl;
 }

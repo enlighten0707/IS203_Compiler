@@ -553,12 +553,12 @@ public:
    bool is_empty_Expr(){ return false;}
    Symbol checkType();
    void code(ostream&);
-   bool inReg() {
-      return map->lookup(var)->inRegister;
-   }
-   bool isFloat() {
-      return map->lookup(var)->isFloat;
-   }
+   // bool inReg() {
+   //    return map->lookup(var)->inRegister;
+   // }
+   // bool isFloat() {
+   //    return map->lookup(var)->isFloat;
+   // }
 };
 
 // define constructor - no_expr

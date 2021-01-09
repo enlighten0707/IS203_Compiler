@@ -34,7 +34,7 @@ euclidean:
 	movq	%rax, %rsi
 	popq	 %r15
 	addq	%r15, %rsp
-	jmp	 .POS1
+	jmp	   .POS1
 .POS0:
 	xorq	%r15, %r15
 	pushq	 %r15
@@ -57,7 +57,7 @@ euclidean:
 	setne	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	 .POS3
+	je	   .POS3
 	xorq	%r15, %r15
 	pushq	 %r15
 	movq	%rsi, %rax
@@ -74,7 +74,7 @@ euclidean:
 	movq	%rax, %rdi
 	popq	 %r15
 	addq	%r15, %rsp
-	jmp	 .POS2
+	jmp	   .POS2
 .POS3:
 	movq	%rsi, %rax
 	popq	 %r15
@@ -100,6 +100,16 @@ main:
 	pushq	 %r14
 	pushq	 %r15
 	xorq	%r15, %r15
+	subq	$8, %rsp
+	addq	$8, %r15
+	subq	$8, %rsp
+	addq	$8, %r15
+	subq	$8, %rsp
+	addq	$8, %r15
+	subq	$8, %rsp
+	addq	$8, %r15
+	subq	$8, %rsp
+	addq	$8, %r15
 	subq	$8, %rsp
 	addq	$8, %r15
 	subq	$8, %rsp
@@ -159,6 +169,14 @@ main:
 	movq	%rax, %rdi
 	movq	-56(%rbp), %rax
 	movq	%rax, %rsi
+	movq	-64(%rbp), %rax
+	movq	%rax, %rdx
+	movq	-72(%rbp), %rax
+	movq	%rax, %rcx
+	movq	-80(%rbp), %rax
+	movq	%rax, %r8
+	movq	-88(%rbp), %rax
+	movq	%rax, %r9
 	call	 euclidean
 	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
@@ -183,8 +201,10 @@ main:
 	popq	 %rsi
 	popq	 %rdi
 	movq	%rax, %rsi
+	subq	$8, %rsp
 	movl	$0, %eax
 	call	 printf
+	addq	$8, %rsp
 	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
 	movsd	(%rsp), %xmm6
