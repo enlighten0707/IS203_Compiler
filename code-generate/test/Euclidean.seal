@@ -3,7 +3,7 @@
     the original file may not consist of all the syntax
 */
 
-func euclidean(x1 Int, x2 Int,x3 Int,x4 Int,x5 Int,x6 Int) Int {
+func euclidean(x1 Int, x2 Int) Int {
     var m Int;
     if x1 < x2 {
         m = x1;
@@ -23,15 +23,10 @@ func euclidean(x1 Int, x2 Int,x3 Int,x4 Int,x5 Int,x6 Int) Int {
 func main() Void{
     var x1 Int;
     var x2 Int;
-    var x3 Int;
-    var x4 Int;
-    var x5 Int;
-    var x6 Int;
-    var x7 Int;
 
     x1 = 23398;
     x2 = 14567;
-    printf("gcd(23398, 14567) = %lld \n ", euclidean(x1,x2,x3,x4,x5,x6));
+    printf("gcd(23398, 14567) = %lld \n ", euclidean(x1,x2));
 
     return;
 }

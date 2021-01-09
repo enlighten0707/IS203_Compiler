@@ -175,9 +175,26 @@ func main() Void{
 ```
 
 ## Code-Generate
-- [ ] 函数参数多于6/8个的逻辑，有问题
+- [ ] 函数参数不多于6个，检查代码
 - [ ] 测试跳转：break, continue
-- [ ] object_table中的AddAndType改一下
+- [x] generateParam-忽略
+- [ ] 全局变量,测试
+- [ ] 局部变量，多个变量声明
 - [ ] flag?
-- [ ] generateParam
-- [ ] 全局变量
+- [x] stmtBlock, scope?针对参数处理
+
+### 指令
+```bash
+make cgen
+make clean
+./cgen test/helloworld.seal -o tmp-answer/helloworld.s  
+./cgen test/helloworld.seal -o tmp-answer/helloworld__.s
+gcc tmp-answer/helloworld.s -no-pie -o tmp-answer/main  
+gcc tmp-answer/helloworld__.s -no-pie -o tmp-answer/main
+./tmp-answer/main
+```
+```bash
+./cgen-ref test/Fibonacci.seal -o ref-asm/Fibonacci.s
+gcc ref-asm/Fibonacci.s -no-pie -o ref-asm/main
+./ref-asm/main
+```

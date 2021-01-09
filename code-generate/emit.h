@@ -37,7 +37,7 @@
 #define SECTION                 "\t.section\t"
 #define TEXT                    "\t.text\t"
 #define RODATA                  "\t.rodata\t"
-#define DATA                    "\t.data\t"
+#define DATA                    ".data\t"
 #define OBJECT                  "@object"
 #define FUNCTION                "@function"
 #define SIZE                    "\t.size\t"

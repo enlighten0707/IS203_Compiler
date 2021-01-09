@@ -1,14 +1,7 @@
 # start of generated code
-.data	
-	.globl	glb_x
-	.align	8
-	.type	glb_x, @object
-	.size	glb_x, 8
-glb_x:
-	.quad	0
 	.text	
 fib:
-	.globl	fib
+	.global	fib
 	.type	fib, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -28,7 +21,7 @@ fib:
 	setge	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	    .POS0
+	je	 .POS0
 	xorq	%r15, %r15
 	pushq	 %r15
 	movq	$1, %rax
@@ -45,7 +38,7 @@ fib:
 	ret	
 	popq	 %r15
 	addq	%r15, %rsp
-	jmp	   .POS1
+	jmp	 .POS1
 .POS0:
 	xorq	%r15, %r15
 	pushq	 %r15
@@ -59,21 +52,21 @@ fib:
 	pushq	 %r8
 	pushq	 %r9
 	subq	$8, %rsp
-	movsd	%xmm0, 0(%rsp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm1, 0(%rsp)
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm2, 0(%rsp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm3, 0(%rsp)
+	movsd	%xmm3, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm4, 0(%rsp)
+	movsd	%xmm4, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm5, 0(%rsp)
+	movsd	%xmm5, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm6, 0(%rsp)
+	movsd	%xmm6, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm7, 0(%rsp)
+	movsd	%xmm7, (%rsp)
 	movq	$2, %rax
 	pushq	 %rax
 	movq	%rdi, %rax
@@ -81,21 +74,21 @@ fib:
 	subq	%rbx, %rax
 	movq	%rax, %rdi
 	call	 fib
-	movsd	0(%rsp), %xmm7
+	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm6
+	movsd	(%rsp), %xmm6
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm5
+	movsd	(%rsp), %xmm5
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm4
+	movsd	(%rsp), %xmm4
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm3
+	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm2
+	movsd	(%rsp), %xmm2
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm1
+	movsd	(%rsp), %xmm1
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm0
+	movsd	(%rsp), %xmm0
 	addq	$8, %rsp
 	popq	 %r9
 	popq	 %r8
@@ -111,21 +104,21 @@ fib:
 	pushq	 %r8
 	pushq	 %r9
 	subq	$8, %rsp
-	movsd	%xmm0, 0(%rsp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm1, 0(%rsp)
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm2, 0(%rsp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm3, 0(%rsp)
+	movsd	%xmm3, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm4, 0(%rsp)
+	movsd	%xmm4, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm5, 0(%rsp)
+	movsd	%xmm5, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm6, 0(%rsp)
+	movsd	%xmm6, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm7, 0(%rsp)
+	movsd	%xmm7, (%rsp)
 	movq	$1, %rax
 	pushq	 %rax
 	movq	%rdi, %rax
@@ -133,21 +126,21 @@ fib:
 	subq	%rbx, %rax
 	movq	%rax, %rdi
 	call	 fib
-	movsd	0(%rsp), %xmm7
+	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm6
+	movsd	(%rsp), %xmm6
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm5
+	movsd	(%rsp), %xmm5
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm4
+	movsd	(%rsp), %xmm4
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm3
+	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm2
+	movsd	(%rsp), %xmm2
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm1
+	movsd	(%rsp), %xmm1
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm0
+	movsd	(%rsp), %xmm0
 	addq	$8, %rsp
 	popq	 %r9
 	popq	 %r8
@@ -170,7 +163,7 @@ fib:
 	addq	%r15, %rsp
 	.size	fib, .-fib
 main:
-	.globl	main
+	.global	main
 	.type	main, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -184,8 +177,6 @@ main:
 	addq	$8, %r15
 	pushq	 %r15
 	movq	$1, %rax
-	movq	%rax, glb_x(%rip)
-	movq	$1, %rax
 	movq	%rax, -48(%rbp)
 .POS2:
 	movq	$15, %rax
@@ -197,7 +188,7 @@ main:
 	setg	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	   .POS3
+	je	 .POS3
 	xorq	%r15, %r15
 	pushq	 %r15
 	pushq	 %rdi
@@ -207,21 +198,21 @@ main:
 	pushq	 %r8
 	pushq	 %r9
 	subq	$8, %rsp
-	movsd	%xmm0, 0(%rsp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm1, 0(%rsp)
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm2, 0(%rsp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm3, 0(%rsp)
+	movsd	%xmm3, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm4, 0(%rsp)
+	movsd	%xmm4, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm5, 0(%rsp)
+	movsd	%xmm5, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm6, 0(%rsp)
+	movsd	%xmm6, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm7, 0(%rsp)
+	movsd	%xmm7, (%rsp)
 	movq	$.LC0, %rax
 	movq	%rax, %rdi
 	movq	-48(%rbp), %rax
@@ -233,39 +224,39 @@ main:
 	pushq	 %r8
 	pushq	 %r9
 	subq	$8, %rsp
-	movsd	%xmm0, 0(%rsp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm1, 0(%rsp)
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm2, 0(%rsp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm3, 0(%rsp)
+	movsd	%xmm3, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm4, 0(%rsp)
+	movsd	%xmm4, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm5, 0(%rsp)
+	movsd	%xmm5, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm6, 0(%rsp)
+	movsd	%xmm6, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm7, 0(%rsp)
+	movsd	%xmm7, (%rsp)
 	movq	-48(%rbp), %rax
 	movq	%rax, %rdi
 	call	 fib
-	movsd	0(%rsp), %xmm7
+	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm6
+	movsd	(%rsp), %xmm6
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm5
+	movsd	(%rsp), %xmm5
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm4
+	movsd	(%rsp), %xmm4
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm3
+	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm2
+	movsd	(%rsp), %xmm2
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm1
+	movsd	(%rsp), %xmm1
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm0
+	movsd	(%rsp), %xmm0
 	addq	$8, %rsp
 	popq	 %r9
 	popq	 %r8
@@ -276,21 +267,21 @@ main:
 	movq	%rax, %rdx
 	movl	$0, %eax
 	call	 printf
-	movsd	0(%rsp), %xmm7
+	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm6
+	movsd	(%rsp), %xmm6
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm5
+	movsd	(%rsp), %xmm5
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm4
+	movsd	(%rsp), %xmm4
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm3
+	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm2
+	movsd	(%rsp), %xmm2
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm1
+	movsd	(%rsp), %xmm1
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm0
+	movsd	(%rsp), %xmm0
 	addq	$8, %rsp
 	popq	 %r9
 	popq	 %r8
@@ -307,7 +298,7 @@ main:
 	popq	 %rbx
 	addq	%rbx, %rax
 	movq	%rax, -48(%rbp)
-	jmp	   .POS2
+	jmp	 .POS2
 .POS3:
 	movq	$1, %rax
 	popq	 %r15

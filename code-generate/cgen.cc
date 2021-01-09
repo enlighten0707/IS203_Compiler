@@ -8,6 +8,7 @@
 
 #include "cgen.h"
 #include "cgen_gc.h"
+#include<string.h>
 
 using namespace std;
 
@@ -30,15 +31,15 @@ struct Jump_Stmt {
   int level;
 };
 
-struct AddAndType {
-  char* add;
+struct Object_Info {
+  char* store_id;
   bool isFloat;
-  bool inRegister;
+  bool in_reg;
 };
 
 SymbolTable<int, Jump_Stmt> *break_table;
 SymbolTable<int, Jump_Stmt> *continue_table;
-SymbolTable<Symbol ,AddAndType> *object_table;
+SymbolTable<Symbol ,Object_Info> *object_table;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -57,6 +58,18 @@ SymbolTable<Symbol ,AddAndType> *object_table;
 static void emit_mov(const char *source, const char *dest, ostream& s)
 {
   s << MOV << source << COMMA << dest << endl;
+}
+
+static void emit_rmmov(const char *source_reg, int offset, const char *base_reg, ostream& s)
+{
+  s << MOV << source_reg << COMMA << offset << "(" << base_reg << ")"
+      << endl;
+}
+
+static void emit_mrmov(const char *base_reg, int offset, const char *dest_reg, ostream& s)
+{
+  s << MOV << offset << "(" << base_reg << ")" << COMMA << dest_reg  
+      << endl;
 }
 
 static void emit_add(const char *source_reg, const char *dest_reg, ostream& s)
@@ -317,7 +330,7 @@ static void initialize_constants(void)
     //other tables
     break_table = new SymbolTable<int,Jump_Stmt>();
     continue_table = new SymbolTable<int,Jump_Stmt>();
-    object_table = new SymbolTable<Symbol,AddAndType>();
+    object_table = new SymbolTable<Symbol,Object_Info>();
 }
 
 
@@ -433,18 +446,55 @@ static void emit_global_bool(Symbol name, ostream& s) {
 //
 //********************************************************
 
+void code_global_data(Decls decls, ostream &s)
+{
+  bool have_data = 0;
+  for (int i = decls->first(); decls->more(i); i = decls->next(i))
+  {
+    if (!decls->nth(i)->isCallDecl()){
+      if (!have_data) {
+        s << DATA << endl;
+        have_data = 1;
+      }
+      if (decls->nth(i)->getType() == String) continue;
+      Symbol name = decls->nth(i)->getName();
+      if (decls->nth(i)->getType() == Int) emit_global_int(name, s);
+      if (decls->nth(i)->getType() == Float) emit_global_float(name, s);
+      if (decls->nth(i)->getType() == Bool) emit_global_bool(name, s);
+      
+      Object_Info* object = new Object_Info();
+      object->in_reg=1;
+      object->store_id = strcat(name->get_string(),"(%rip)");
+      object->isFloat = (decls->nth(i)->getType() == Float);      
+      object_table->addid(name,object);
+    }
+  }
+}
+
+void code_calls(Decls decls, ostream &s) {
+  s << TEXT << endl;
+  for (int i = decls->first(); decls->more(i); i = decls->next(i))
+    if (decls->nth(i)->isCallDecl()) 
+      decls->nth(i)->code(s);
+}
+
 void cgen_helper(Decls decls, ostream& s)
 {
   code(decls, s);
 }
 
-
 void code(Decls decls, ostream& s)
 {
-  s << TEXT << endl;
-  for(int i = decls->first(); decls->more(i); i = decls->next(i)) {
-    decls->nth(i)->code(s);
-  }
+  object_table->enterscope();
+  if (cgen_debug) s << "-----Coding global data-----" << endl;
+  code_global_data(decls, s);
+  if (cgen_debug) s << "-----Coding calls-----" << endl;
+  code_calls(decls, s);
+  object_table->exitscope();
+
+  // s << TEXT << endl;
+  // for (int i = decls->first(); decls->more(i); i = decls->next(i))
+  //   decls->nth(i)->code(s);
 }
 
 
@@ -537,62 +587,27 @@ void CallDecl_class::code(ostream &s) {
   
   rsp_offset=-40;
 
-  int number_i = 0;
-  int number_f = 0;
-  int paraNumInStack = 0;
-
-  for(int i = paras->first(),j=0,k=0;paras->more(i); i = paras->next(i)) {
-    if(paras->nth(i)->isFloat()) {
-      if(k<8) k++;
-      else paraNumInStack++;
-    } 
-    else {
-      if(j<6) j++;
-      else paraNumInStack++;
-    }
-  }
+  int num_int = 0;
+  int num_float = 0;
 
   for(int i = paras->first(),index=1; paras->more(i); i = paras->next(i)) {
-    /*
-    struct AddAndType {
-    char* add;
-    bool isFloat;
-    bool inRegister;
-    };
-    */
-
-    AddAndType *object = new AddAndType();
+    Object_Info *object = new Object_Info();
     if(paras->nth(i)->isFloat()) {
       object->isFloat=true;
-      if(number_f<8){
-        object->add=CALL_XMM[number_f];
-        object->inRegister=1;
-        object_table->addid(paras->nth(i)->getName(),object);
-        number_f++;
-      }
-      else{
-        object->inRegister=0;
-        object->add=generateParam(16+(paraNumInStack-index)*8,RBP);
-        object_table->addid(paras->nth(i)->getName(),object);
-        index++;
-      }
+      object->store_id=CALL_XMM[num_float];
+      object->in_reg=1;
+      object_table->addid(paras->nth(i)->getName(),object);
+      num_float++;
     } 
     else {
       object->isFloat=false;
-      if (number_i<6){
-        object->add=CALL_REGS[number_i];
-        object->inRegister=1;
-        object_table->addid(paras->nth(i)->getName(),object);
-        number_i++;
-      }
-      else{
-        object->inRegister=0;
-        object->add=generateParam(16+(paraNumInStack-index)*8,RBP);
-        object_table->addid(paras->nth(i)->getName(),object);
-        index++;
-      }
+      object->store_id=CALL_REGS[num_int];
+      object->in_reg=1;
+      object_table->addid(paras->nth(i)->getName(),object);
+      num_int++;
     }
   }
+  
   stmtBlock_level=0;
   body->code(s);
   s << SIZE << name->get_string()<<", .-"<< name->get_string()<<endl;
@@ -642,18 +657,21 @@ void StmtBlock_class::code(ostream &s) {
 void VariableDecl_class::code(ostream &s) {
   if (cgen_debug) s << "-----VariableDecl-----" <<endl;
 
-  AddAndType* object = new AddAndType();
+  Object_Info* object = new Object_Info();
   emit_sub("$8", RSP, s);
   rsp_offset-=8;
-  object->inRegister=0;
-  object->add = generateParam(rsp_offset,RBP);
+  object->in_reg=0;
+  // char rsp_offset_str[10];
+  // sprintf(rsp_offset_str, "%d", rsp_offset);
+  // object->store_id = strcat(rsp_offset_str, "(%rbp)");
+  object->store_id = generateParam(rsp_offset,RBP);
   object->isFloat = getType()->isFloat();
 
-  if(cgen_debug) s << "<add var \t"<<variable->getName() << "\t"<< object->add << ">" << endl;
+  if(cgen_debug) s << "<add var \t"<<variable->getName() << "\t"<< object->store_id << ">" << endl;
   
   object_table->addid(variable->getName(),object);
 
-  if (cgen_debug) s<<"<the location of "<<variable->getName()<<" is "<<object_table->lookup(variable->getName())->add << ">"<<endl;
+  if (cgen_debug) s<<"<the location of "<<variable->getName()<<" is "<<object_table->lookup(variable->getName())->store_id << ">"<<endl;
   
   if (cgen_debug) s << "-----/VariableDecl-----" <<endl;
 }
@@ -819,7 +837,7 @@ void Call_class::code(ostream &s) {
 
   for(int i=0;i<8;++i){
     emit_sub("$8",RSP,s);
-    emit_movsd(CALL_XMM[i],generateParam(0,RSP),s);
+    emit_movsd(CALL_XMM[i],"0(%rsp)",s);
   }
 
   int fNum=0;
@@ -835,7 +853,7 @@ void Call_class::code(ostream &s) {
       }
       else{
         emit_sub("$8",RSP,s);
-        emit_mov(XMM8,generateParam(0,RSP),s);
+        emit_mov(XMM8,"0(%rsp)",s);
         fNum++;
       }
     } 
@@ -846,7 +864,7 @@ void Call_class::code(ostream &s) {
       }
       else{
         emit_sub("$8",RSP,s);
-        emit_mov(RAX,generateParam(0,RSP),s);
+        emit_mov(RAX,"0(%rsp)",s);
         notFNum++;
       }
     }
@@ -864,7 +882,7 @@ void Call_class::code(ostream &s) {
   }
   
   for(int i=7;i>=0;--i){
-    emit_movsd(generateParam(0,RSP),CALL_XMM[i],s);
+    emit_movsd("0(%rsp)",CALL_XMM[i],s);
     emit_add("$8",RSP,s);
   }
   for(int i=5;i>=0;--i) emit_pop(CALL_REGS[i],s);
@@ -890,12 +908,12 @@ void Assign_class::code(ostream &s) {
       emit_xorpd(XMM8, XMM8, s);
       emit_int_to_float(RAX, XMM8,s);
     }
-    if(object_table->lookup(lvalue)->inRegister) 
-      emit_mov(XMM8, object_table->lookup(lvalue)->add,s);
+    if(object_table->lookup(lvalue)->in_reg) 
+      emit_mov(XMM8, object_table->lookup(lvalue)->store_id,s);
     else 
-      emit_movsd(XMM8, object_table->lookup(lvalue)->add,s);
+      emit_movsd(XMM8, object_table->lookup(lvalue)->store_id,s);
   } 
-  else emit_mov(RAX,object_table->lookup(lvalue)->add,s);
+  else emit_mov(RAX,object_table->lookup(lvalue)->store_id,s);
 
   if (cgen_debug) s<<"</assign>"<<endl;
 }
@@ -1380,7 +1398,6 @@ void Const_string_class::code(ostream &s) {
 
 }
 
-
 static char* getImmediateFloat(char* str) {
   double x = stof(str);
   long long unsigned k = *(long*)(&x);
@@ -1413,17 +1430,18 @@ void Object_class::code(ostream &s) {
   if (cgen_debug) s<<"<object>"<<endl;
 
   if(getType()==Float) {
-    if(object_table->lookup(var)->inRegister) {
-      emit_movsd(object_table->lookup(var)->add,generateParam(-8,"%rsp"),s);
-      emit_mov(generateParam(-8,"%rsp"),"%xmm8",s);
-    } else {
-      emit_mov(object_table->lookup(var)->add,"%r12",s);
-      emit_mov("%r12",generateParam(-8,"%rsp"),s);
-      emit_xorpd("%xmm8", "%xmm8", s);
-      emit_mov(generateParam(-8,"%rsp"),"%xmm8",s);
+    if(object_table->lookup(var)->in_reg) {
+      emit_movsd(object_table->lookup(var)->store_id,generateParam(-8,RSP),s);
+      emit_mov(generateParam(-8,RSP),XMM8,s);
+    } 
+    else {
+      emit_mov(object_table->lookup(var)->store_id,R12,s);
+      emit_mov(R12,generateParam(-8,RSP),s);
+      emit_xorpd(XMM8, XMM8, s);
+      emit_mov(generateParam(-8,RSP),XMM8,s);
     }
   } 
-  else emit_mov(object_table->lookup(var)->add,RAX,s);
+  else emit_mov(object_table->lookup(var)->store_id,RAX,s);
   
   if (cgen_debug) s<<"</object>"<<endl;
 }

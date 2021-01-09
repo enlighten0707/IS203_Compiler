@@ -1,8 +1,8 @@
 # start of generated code
 	.text	
-ind:
-	.globl	ind
-	.type	ind, @function
+euclidean:
+	.global	euclidean
+	.type	euclidean, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
 	pushq	 %rbx
@@ -13,49 +13,70 @@ ind:
 	xorq	%r15, %r15
 	subq	$8, %rsp
 	addq	$8, %r15
-	subq	$8, %rsp
-	addq	$8, %r15
 	pushq	 %r15
-	movq	$1, %rax
-	movq	%rax, -48(%rbp)
-	movq	%rdi, %rax
-	movq	%rax, -56(%rbp)
-.POS0:
-	movq	$1, %rax
+	movq	%rsi, %rax
 	pushq	 %rax
-	movq	-56(%rbp), %rax
+	movq	%rdi, %rax
+	popq	 %rbx
+	xorq	%r13, %r13
+	cmpq	%rax, %rbx
+	setg	%r13b
+	movq	%r13, %rax
+	testq	%rax, %rax
+	je	 .POS0
+	xorq	%r15, %r15
+	pushq	 %r15
+	movq	%rdi, %rax
+	movq	%rax, -48(%rbp)
+	movq	%rsi, %rax
+	movq	%rax, %rdi
+	movq	-48(%rbp), %rax
+	movq	%rax, %rsi
+	popq	 %r15
+	addq	%r15, %rsp
+	jmp	 .POS1
+.POS0:
+	xorq	%r15, %r15
+	pushq	 %r15
+	popq	 %r15
+	addq	%r15, %rsp
+.POS1:
+.POS2:
+	movq	$0, %rax
+	pushq	 %rax
+	movq	%rsi, %rax
+	pushq	 %rax
+	movq	%rdi, %rax
+	xorq	%rdx, %rdx
+	popq	 %r13
+	idivq	%r13
+	movq	%rdx, %rax
 	popq	 %rbx
 	xorq	%r13, %r13
 	cmpq	%rax, %rbx
 	setne	%r13b
 	movq	%r13, %rax
 	testq	%rax, %rax
-	je	   .POS1
+	je	 .POS3
 	xorq	%r15, %r15
 	pushq	 %r15
 	movq	%rsi, %rax
+	movq	%rax, -48(%rbp)
+	movq	%rsi, %rax
 	pushq	 %rax
 	movq	%rdi, %rax
-	pushq	 %rax
-	movq	-56(%rbp), %rax
-	popq	 %rbx
-	imulq	%rbx, %rax
 	xorq	%rdx, %rdx
 	popq	 %r13
 	idivq	%r13
 	movq	%rdx, %rax
-	movq	%rax, -56(%rbp)
-	movq	$1, %rax
-	pushq	 %rax
+	movq	%rax, %rsi
 	movq	-48(%rbp), %rax
-	popq	 %rbx
-	addq	%rbx, %rax
-	movq	%rax, -48(%rbp)
+	movq	%rax, %rdi
 	popq	 %r15
 	addq	%r15, %rsp
-	jmp	   .POS0
-.POS1:
-	movq	-48(%rbp), %rax
+	jmp	 .POS2
+.POS3:
+	movq	%rsi, %rax
 	popq	 %r15
 	addq	%r15, %rsp
 	popq	 %r15
@@ -67,9 +88,9 @@ ind:
 	ret	
 	popq	 %r15
 	addq	%r15, %rsp
-	.size	ind, .-ind
+	.size	euclidean, .-euclidean
 main:
-	.globl	main
+	.global	main
 	.type	main, @function
 	pushq	 %rbp
 	movq	%rsp, %rbp
@@ -81,22 +102,13 @@ main:
 	xorq	%r15, %r15
 	subq	$8, %rsp
 	addq	$8, %r15
+	subq	$8, %rsp
+	addq	$8, %r15
 	pushq	 %r15
-	movq	$1, %rax
+	movq	$23398, %rax
 	movq	%rax, -48(%rbp)
-.POS2:
-	movq	$23, %rax
-	pushq	 %rax
-	movq	-48(%rbp), %rax
-	popq	 %rbx
-	xorq	%r13, %r13
-	cmpq	%rax, %rbx
-	setg	%r13b
-	movq	%r13, %rax
-	testq	%rax, %rax
-	je	   .POS3
-	xorq	%r15, %r15
-	pushq	 %r15
+	movq	$14567, %rax
+	movq	%rax, -56(%rbp)
 	pushq	 %rdi
 	pushq	 %rsi
 	pushq	 %rdx
@@ -104,25 +116,23 @@ main:
 	pushq	 %r8
 	pushq	 %r9
 	subq	$8, %rsp
-	movsd	%xmm0, 0(%rsp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm1, 0(%rsp)
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm2, 0(%rsp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm3, 0(%rsp)
+	movsd	%xmm3, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm4, 0(%rsp)
+	movsd	%xmm4, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm5, 0(%rsp)
+	movsd	%xmm5, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm6, 0(%rsp)
+	movsd	%xmm6, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm7, 0(%rsp)
+	movsd	%xmm7, (%rsp)
 	movq	$.LC0, %rax
 	movq	%rax, %rdi
-	movq	-48(%rbp), %rax
-	movq	%rax, %rsi
 	pushq	 %rdi
 	pushq	 %rsi
 	pushq	 %rdx
@@ -130,41 +140,41 @@ main:
 	pushq	 %r8
 	pushq	 %r9
 	subq	$8, %rsp
-	movsd	%xmm0, 0(%rsp)
+	movsd	%xmm0, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm1, 0(%rsp)
+	movsd	%xmm1, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm2, 0(%rsp)
+	movsd	%xmm2, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm3, 0(%rsp)
+	movsd	%xmm3, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm4, 0(%rsp)
+	movsd	%xmm4, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm5, 0(%rsp)
+	movsd	%xmm5, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm6, 0(%rsp)
+	movsd	%xmm6, (%rsp)
 	subq	$8, %rsp
-	movsd	%xmm7, 0(%rsp)
+	movsd	%xmm7, (%rsp)
 	movq	-48(%rbp), %rax
 	movq	%rax, %rdi
-	movq	$23, %rax
+	movq	-56(%rbp), %rax
 	movq	%rax, %rsi
-	call	 ind
-	movsd	0(%rsp), %xmm7
+	call	 euclidean
+	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm6
+	movsd	(%rsp), %xmm6
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm5
+	movsd	(%rsp), %xmm5
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm4
+	movsd	(%rsp), %xmm4
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm3
+	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm2
+	movsd	(%rsp), %xmm2
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm1
+	movsd	(%rsp), %xmm1
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm0
+	movsd	(%rsp), %xmm0
 	addq	$8, %rsp
 	popq	 %r9
 	popq	 %r8
@@ -172,24 +182,24 @@ main:
 	popq	 %rdx
 	popq	 %rsi
 	popq	 %rdi
-	movq	%rax, %rdx
+	movq	%rax, %rsi
 	movl	$0, %eax
 	call	 printf
-	movsd	0(%rsp), %xmm7
+	movsd	(%rsp), %xmm7
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm6
+	movsd	(%rsp), %xmm6
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm5
+	movsd	(%rsp), %xmm5
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm4
+	movsd	(%rsp), %xmm4
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm3
+	movsd	(%rsp), %xmm3
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm2
+	movsd	(%rsp), %xmm2
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm1
+	movsd	(%rsp), %xmm1
 	addq	$8, %rsp
-	movsd	0(%rsp), %xmm0
+	movsd	(%rsp), %xmm0
 	addq	$8, %rsp
 	popq	 %r9
 	popq	 %r8
@@ -197,17 +207,6 @@ main:
 	popq	 %rdx
 	popq	 %rsi
 	popq	 %rdi
-	popq	 %r15
-	addq	%r15, %rsp
-.POS4:
-	movq	$1, %rax
-	pushq	 %rax
-	movq	-48(%rbp), %rax
-	popq	 %rbx
-	addq	%rbx, %rax
-	movq	%rax, -48(%rbp)
-	jmp	   .POS2
-.POS3:
 	movq	$1, %rax
 	popq	 %r15
 	addq	%r15, %rsp
@@ -223,6 +222,6 @@ main:
 	.size	main, .-main
 	.section	.rodata
 .LC0:
-	.string	"ind(%lld) = %lld \n"
+	.string	"gcd(23398, 14567) = %lld \n "
 
 # end of generated code
