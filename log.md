@@ -175,13 +175,16 @@ func main() Void{
 ```
 
 ## Code-Generate
-- [ ] 函数参数不多于6个，检查代码
-- [ ] 测试跳转：break, continue
+- [x] 函数参数不多于6个，检查代码
 - [x] generateParam-忽略
 - [ ] 全局变量,测试
 - [ ] 局部变量，多个变量声明
 - [ ] flag?
 - [x] stmtBlock, scope?针对参数处理
+- [x] if
+- [x] while
+- [x] for
+- [x] break, continue
 
 ### 指令
 ```bash
