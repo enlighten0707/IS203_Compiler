@@ -8,6 +8,7 @@
 - [x] <a href="PA3-semant" title="PA3-semant">PA3-Semant Analysis</a> 语义分析
 - [x] <a href="PA4-code-generate" title="PA4-code-generate">PA4-Code Generate</a> 目标代码生成
 ### Document
-* The instruction of the assignment and some auxiliary document which may help.
+* The <a href="document/instructions" title="document/instructions">instruction</a> of the assignment and some <a href="document/auxiliary" title="document/auxiliary">auxiliary document</a> which may help.
+* <a href="document/test" title="document/test">Test samples and answers</a> for the code are provided.
 ## Acknowledgement
-* The basic code is built by TA Ding Ma.
+* The basic code and <a href="document/standard" title="document/standard">one possible solution</a> are provided by TA Ding Ma.
